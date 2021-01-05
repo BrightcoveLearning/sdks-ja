@@ -1,1 +1,1 @@
-# sdks-ja
+# sdks
