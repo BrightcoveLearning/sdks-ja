@@ -1,0 +1,221 @@
+---
+title: 「ネイティブSDKを使用したフォレンジック透かし」の
+description: 「このトピックでは、Brightcove Native SDKを使用して、フォレンジック透かしで保護されたビデオを配信する方法を学習します。」
+parent: Features 
+grandparent: Home
+---
+ <h1>{{ page.title }}</h1>
+<article class="bcls-article">
+  <summary>{{ page.description }}</summary>
+
+  <section class="bcls-section">
+    <h2 id="Introduction">はじめに</h2>
+    <p>
+      フォレンジックウォーターマーキングを使用すると、著作権侵害や不正なコンテンツ共有からプレミアムコンテンツを保護できます。この機能により、動画に目に見えない透かしが追加され、コンテンツのリークを追跡できるようになります。
+    </p>
+    <p>詳細については、を参照してください。<a href="https://apis.support.brightcove.com/general/overview-forensic-watermarking.html">概要：フォレンジック透かし</a>資料。</p>
+  </section>
+
+  <section class="bcls-section">
+    <h2 id="Requirements">要件</h2>
+    <p>この機能をサポートするには、次の要件が必要です。</p>
+    <h3>セットアップ</h3>
+    <p>プレーヤーの構成に加えて、セットアップ要件があります。詳細については、<a href="https://apis.support.brightcove.com/general/overview-forensic-watermarking.html">概要：フォレンジック透かし</a>資料。</p>
+
+    <h3>デバイスOSのバージョン</h3>
+    <ul>
+      <li>Android6.0以降</li>
+      <li>iOS11.0以降</li>
+    </ul>
+
+    <h3>BrightcoveSDKバージョン</h3>
+    <ul>
+      <li>Android6.16.3以降のネイティブSDK</li>
+      <li>iOS6.9.0以降のネイティブSDK</li>
+    </ul>
+  </section>
+
+  <section class="bcls-section">
+    <h2 id="Using_Playback_Rights_Android">Androidの実装</h2>
+    <p>フォレンジック透かしの構成は、ビデオレベルで実行されます。</p>
+    
+    <ol class="bcls-tasklist-restart">
+      <li>
+        <p>プレーヤーは登録システムと統合されている必要があります。これにより、ビューアーIDが分析Webビーコン（<code translate="No">user</code>分野）。</p>
+        <p>例は次のとおりです。</p>
+  <pre class="line-numbers"><code class="language-java" translate="No">HashMap&lt;String, String&gt; baseParams = new HashMap&lt;&gt;();
+  baseParams.put(Analytics.Fields.USER, &quot;viewer id&quot;);
+  baseParams.put(Analytics.Fields.APPLICATION_ID, &quot;application id&quot;);
+  
+  HashMap&lt;String, Object&gt; eventParams = new HashMap&lt;&gt;();
+  eventParams.put(Analytics.Fields.BASE_PARAMS, baseParams);
+  eventEmitter.emit(EventType.ADD_ANALYTICS_BASE_PARAMS, eventParams);          
+</code></pre>
+      </li>
+      <li>
+        <p>の中に<code translate="No">Catalog.findVideo</code>また<code translate="No">Catalog.findPlaylist</code>メソッド呼び出し、追加<code translate="No">VideoUtil</code>透かしトークンを追加する方法。</p>
+
+        <p><strong>onVideoコールバックで</strong></p>
+        <pre><code class="language-java" translate="No">public void onVideo(Video video) {
+    VideoUtil.addWatermarkingToken(video, yourWatermarkingToken);
+    brightcoveVideoView.add(video);
+} 
+</code></pre>
+        <p><strong>onPlaylistコールバック内</strong></p>
+        <pre><code class="language-java" translate="No">public void onPlaylist(Playlist playlist) {
+  for (Video video : testPlaylist.getVideos()) {
+      VideoUtil.addWatermarkingToken(video, yourWatermarkingToken);
+  }
+  brightcoveVideoView.addAll(testPlaylist.getVideos());
+}
+</code></pre>
+      </li>
+      <!-- <li>
+        <p>
+          <p>In the player Activity’s <code translate="No">onCreate</code> method, add this call, before any Catalog calls to retrieve your video or playlist:</p>
+          <pre><code class="language-java" translate="No">VideoUtil.setWatermarkingToken(yourWatermarkingToken);
+</code></pre>
+        </p>
+      </li> -->
+      <li>
+        <p>この呼び出しが行われると、カタログがPlayback APIからビデオまたはプレイリストのメタデータを取得すると、<code translate="No">VideoUtil</code>クラスは透かしトークンプレースホルダーを置き換えます<code translate="No">{WMT}</code>ビデオのソースURLで発生する可能性のある場所であれば、トークン値を使用します。このトークンは、透かしが入っている可能性のある再生リスト内の動画ごとに置き換えることができます。</p>
+      </li>
+    </ol>
+
+    <h3>Chromecast</h3>
+    <p>透かし入りのビデオをキャストするには、ビルド時にアプリケーションID、透かし入れトークン、およびユーザーIDを指定する必要があります。<code translate="No">BrightcoveCastCustomData</code> Castプラグインを持つオブジェクト。</p>
+      <p>あなたのコードで<code translate="No">BrightcoveCastCustomData</code>オブジェクト、次の行を追加します：</p>
+      <pre><code class="language-java" translate="No">public static void setupGoogleCast() {
+GoogleCastComponent.Builder castPluginBuilder = new GoogleCastComponent.Builder(eventEmitter, context)
+        .setAutoPlay(isAutoPlayEnabled)
+        .setQueuingSupported(isQueuingSupported);
+
+    BrightcoveCastCustomData.Builder customDataBuilder = new BrightcoveCastCustomData.Builder(context)
+        .setApplicationId(yourApplicationId)
+        .setWatermarkingToken(yourWatermarkingToken);
+        .setUserId(yourUserId);
+        // Add the custom data elements to the castPluginBuilder
+        
+    castPluginBuilder
+        .setEnableCustomData(true)
+        .setCustomData(customDataBuilder.build());
+}            
+</code></pre>
+
+    <p>透かし入りのビデオでキャスト接続を開くと、<code translate="No">customData</code>次のようにフォーマットされたオブジェクト：</p>
+    <pre><code class="language-json" translate="No">{
+      &quot;accountId&quot;: &quot;yourAccountId&quot;,
+      &quot;analyticsParams&quot;: {
+          &quot;application&quot;: &quot;yourApplicationId&quot;,
+          &quot;user&quot;: &quot;yourUserId&quot;
+      },
+      &quot;catalogParams&quot;: {
+          &quot;type&quot;: &quot;video&quot;,
+          &quot;id&quot;: &quot;videoId&quot;,
+          &quot;policyKey&quot;: &quot;yourPolicyKey&quot;,
+          &quot;watermarkingToken&quot;: &quot;yourWatermarkingToken&quot;
+      }
+  }  
+</code></pre>
+
+    <h3>オフライン再生</h3>
+    <p>ビデオをダウンロードするプロセスには、現在のビデオメタデータを取得するための複数のカタログ呼び出しが含まれる場合があります。ブライトコーブは、<code translate="No">onVideo</code>購入またはレンタルライセンスを取得するとき、およびビデオをダウンロードするときに存在する可能性のあるコールバックに対する上記のコールバックコード。
+    </p>
+    <p>ビデオがダウンロードされると、オフライン再生は通常どおり機能します。</p>
+    <p>
+      詳細については、<a href="https://github.com/BrightcoveOS/android-player-samples/blob/master/brightcove-exoplayer/OfflinePlaybackSampleApp/src/main/java/com/brightcove/player/samples/offlineplayback/MainActivity.java">オフライン再生サンプルアプリを参照してください</a>。
+    </p>
+
+  </section>
+
+  <section class="bcls-section">
+    <h2 id="iOS_Implementation">iOSの実装</h2>
+    <p>
+      フォレンジック透かしを使用するようにプレーヤーを構成するには、次の手順に従います。
+    </p>
+    <ol class="bcls-tasklist-restart">
+      <li>
+        <p>プレーヤーは登録システムと統合されている必要があります。これにより、ビューアーIDが分析Webビーコン（<code translate="No">user</code>分野）。</p>
+        <p>ここでは、ユーザーIDとアプリケーションIDの値を指定します。</p>
+        <pre class="line-numbers"><code class="language-objectivec" translate="No">@try
+  {
+    [BCOVGlobalConfiguration.sharedConfig setValue:@{
+      @&quot;privateUser&quot;: @&quot;your user id&quot;,
+      @&quot;privateApplication&quot;: @&quot;your application id&quot;
+    }
+    forKey:@&quot;privateSessionAnalytics&quot;];
+  }
+  @catch (NSException *e)
+  {
+    NSLog(@&quot;%@&quot;, e.description);
+  }       
+</code></pre>
+      </li>
+      <li>
+        <p>単一のビデオまたはプレイリストに対するBrightcoveカタログリクエストの一部として、NAGRA透かしトークンを提供します。これは、<code translate="No">watermarkingToken</code>財産。</p>
+        <p>透かしトークンを再生サービスに追加します。</p>
+        <pre class="line-numbers"><code class="language-objectivec" translate="No">/**
+* The watermarking token for use with Forensic Watermarking
+*/
+@property (nonatomic, copy) NSString *watermarkingToken;
+...
+playbackService.watermarkingToken = self.watermarkingToken;     
+</code></pre>
+      </li>
+      <li>
+        <p>単一のビデオまたはプレイリストについては、Brightcoveカタログにリクエストしてください。</p>
+        <p>ビデオリクエストの場合：</p>
+<pre class="line-numbers"><code class="language-objectivec" translate="No">- (void)findVideoWithVideoID:(NSString *)videoID parameters:
+  (NSDictionary *)parameters completion:(void (^)
+  (BCOVVideo *video, NSDictionary *jsonResponse, NSError *error))completionHandler;
+</code></pre>
+        <p>プレイリストリクエストの場合：</p>
+<pre class="line-numbers"><code class="language-objectivec" translate="No">- (void)findPlaylistWithPlaylistID:(NSString *)playlistID parameters:
+  (NSDictionary *)parameters completion:(void (^)
+  (BCOVPlaylist *playlist, NSDictionary *jsonResponse, NSError *error))completionHandler;
+</code></pre>   
+      </li>
+    </ol>
+    <p>詳細については、Native SDK foriOSリファレンスのフォレンジック透かしのセクションを参照してください。</p>
+
+    <h3>Chromecast</h3>
+    <p>キャストするには、透かしトークンとuserIdフィールドを指定する必要があります。</p>
+      <p>あなたのコードで<code translate="No">BrightcoveCastCustomData</code>オブジェクト、次の行を追加します：</p>
+      <pre><code class="language-objectivec" translate="No">BCOVReceiverAppConfig *appConfig = [BCOVReceiverAppConfig new];
+...
+appConfig.userId = @&quot;ios-client@brightcove.com&quot;;
+appConfig.watermarkingToken = watermarkingToken;
+...                 
+</code></pre>
+
+    <p>デバッグコンソールで、Chromecastセッションに使用される構成値を確認できます。</p>
+    <pre><code class="language-json" translate="No">Google Cast Custom Data: {
+  accountId = &lt;your_account_id&gt;;
+  analyticsParams =     {
+      application = &quot;&quot;;
+      user = &quot;ios-client@brightcove.com&quot;;
+  };
+  catalogParams =     {
+      adConfigId = &quot;&quot;;
+      bcovAuthToken = &quot;&quot;;
+      id = &lt;your_video_id&gt;;
+      policyKey = &quot;&lt;your_policy_key&quot;;
+      type = video;
+      watermarkingToken = &quot;&lt;your_watermark_token&quot;;
+  };    
+</code></pre>
+
+    <h3>オフライン再生</h3>
+    <p>ビデオがダウンロードされると、オフライン再生は通常どおり機能するはずです。</p>
+
+    <p>
+      この機能の使用を開始するには、を参照してください。<a href="https://github.com/brightcove/brightcove-player-sdk-ios/blob/master/OfflinePlayback.md">オフライン再生に関するiOSアプリ開発者ガイド</a>リファレンス。
+    </p>
+  </section> 
+
+  <section class="bcls-section">
+    <h2 id="Limitations">制約事項</h2>
+    <p>この機能の制限の詳細については、を参照してください。<a href="https://apis.support.brightcove.com/general/overview-forensic-watermarking.html#Limitations">概要：フォレンジック透かし</a>資料。</p>
+  </section>
+
+</article>

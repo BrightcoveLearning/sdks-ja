@@ -1,0 +1,341 @@
+---
+title: 'ネイティブSDKでの再生制限'
+description: 「このトピックでは、BrightcoveネイティブSDKで再生制限を使用する方法を学習します。」
+parent: Features 
+grandparent: Home
+---
+ <h1>{{ page.title }}</h1>
+<article class="bcls-article">
+  <summary>{{ page.description }}</summary>
+  
+  <!-- <br/>
+  <aside class="bcls-aside bcls-aside--tip">This feature is available for a specific set of customers with access to the Limited Availability phase of Brightcove Playback Restrictions.</aside> -->
+
+  <section class="bcls-section">
+    <h2 id="Introduction">はじめに</h2>
+    <p>
+      デフォルトでは、ネイティブ SDK は Brightcove 再生 API と通信して、動画と再生リストのコンテンツを取得します。再生権限と制限を管理する新しいシステムは、Playback APIの前に配置され、DRMライセンスを使用して再生認証を提供します。
+    </p>
+    <p>DRMの有無にかかわらず再生権を使用できますが、ランタイム制限を使用する場合は、JSON Web Token（JWT）を使用する必要があります。</p>
+    <p>ライセンスキー保護は、DRM保護またはHTTPライブストリーミング暗号化（HLSe）コンテンツで動的配信を使用するときに追加レベルのセキュリティを提供します。ライセンス要求は、署名されたものを使用して認証できます<a href="https://general.support.brightcove.com/developer/create-json-web-token.html">JSON Web Token（JWT）</a>。 </p>
+
+    <p>トークンは、ビデオがプレーヤーにロードされ、ソースが選択されると、ビデオライセンスを要求するときに使用されます。</p>
+
+    <aside class="bcls-aside bcls-aside--information">HLSeコンテンツでは、接続性の向上のため、または最初のセグメントがロードされた後、プレーヤーがレンディションを変更すると、新しいライセンス要求が行われます。</aside>
+
+    <p>この機能に慣れていない場合は、「<a href="https://apis.support.brightcove.com/playback-restrictions/getting-started/overview-playback-restrictions.html">概要」を参照してください。Brightcoveの再生制限</a>資料。</p>
+  </section>
+
+  <section class="bcls-section">
+    <h2 id="Requirements">要件</h2>
+    <p>再生制限を使用するために必要な要件は次のとおりです。</p>
+    <!-- <h3>Playback Rights</h3> -->
+    <h4>Android</h4>
+    <ul>
+      <li>Androidバージョン用のBrightcoveネイティブSDKを使用する必要があります<strong>6.11.0</strong>またはそれ以降</li>
+    </ul>
+    <h4>iOS</h4>
+    <ul><li>iOSバージョン用のBrightcoveNativeSDKを使用する必要があります<strong>6.7.0</strong>またはそれ以降</li>
+    </ul>
+
+    <!-- <h3>License Keys Protection</h3>
+    <p>To use License Keys Protection, you need the following:</p>
+    <ul>
+      <li>Player version <strong>6.33.0</strong> or later</li>
+      <li>If using DRM, you will need the <a href="https://support.brightcove.com/configuring-brightcove-player-drm#Changelog">DRM plugin</a> version <strong>5.5.0</strong> or later</li>
+    </ul> -->
+
+  </section>
+
+  <section class="bcls-section">
+    <h2 id="Android_Using_Playback_Rights">Android:再生権の使用</h2>
+    <aside class="bcls-aside bcls-aside--information">注意:
+      <ul>
+        <li>この実装では、ポリシーキーで構成されたコンテンツ制限はすべて無視されます</li>
+        <li>Androidプラットフォームでは、現在DRMDASHのみがサポートされています</li>
+      </ul>
+    </aside>
+    <p>
+      再生権限と制限をチェックする Playback API リクエストを実行するには、次の手順に従います。
+    </p>
+    <ol class="bcls-tasklist-restart">
+      <li>
+        <p>
+          <a href="https://github.com/BrightcoveOS/android-player-samples/tree/master/brightcove-exoplayer/BasicSampleApp/src/main">基本サンプルアプリから始めます</a>。
+        </p>
+      </li>
+      <li>
+        <p>
+          デフォルトでは、Android 用ネイティブ SDK は、ポリシーキーがある場合、再生 API へのリクエストを行います。再生権限を利用するには、リクエストとともにポリシーキーを送信しないでください。
+        </p>
+        <p>
+          のインスタンスを作成します<code translate="No">com.brightcove.player.edge.Catalog</code>ポリシーキーを提供せずに。例を次に示します。
+        </p>
+        <pre>
+<code class="language-java" translate="No">Catalog catalog = new Catalog.Builder(eventEmitter, accountId).build();</code></pre>
+        <br />
+        <p>
+          Brightcoveサンプルアプリをフォローしている場合は、次のようにアカウントIDを取得します。
+        </p>
+        <pre>
+<code class="language-java" translate="No">getString(R.string.account)</code></pre>
+        &lt;/br/&gt;
+      </li>
+      <li>
+        <p>
+          <strong>オプション</strong> :ランタイム制限を使用する場合は、JWTトークンを作成し、カタログリクエストで渡す必要があります。
+        </p>
+        <p>
+          JWTトークンを作成するには、次の手順に従います。<a href="https://apis.support.brightcove.com/playback-restrictions/getting-started/overview-playback-restrictions.html#Runtime_restrictions">実行時の制限</a>概要のセクション：Brightcoveの再生制限資料。
+        </p>
+        <p>
+          カタログリクエストでトークンを渡すには、を参照してください。<a href="#Using_License_Keys_Protection_Android">ライセンスキー保護の使用：Android</a>セクション。
+        </p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="bcls-section">
+    <h2 id="Android_Using_License_Keys_Protection">Android:ライセンスキー保護の使用</h2>
+
+    <p>Android用のネイティブSDKは現在、HLSeおよびWidevineDASHソースのキー/ライセンス保護をサポートしています。単一のビデオまたはプレイリストに対するBrightcoveカタログリクエストの一部として認証トークンを提供します。</p>
+
+    <p>
+      Brightcoveカタログリクエストを行うには、次の手順に従います。
+    </p>
+    <ol class="bcls-tasklist-restart">
+      <li>
+        <p>
+          作成する<code translate="No">HttpRequestConfig</code>オブジェクトを作成し、次のようにBrightcove認証トークンを設定します。
+        </p>
+        <pre class="line-numbers"><code class="language-java" translate="No">HttpRequestConfig httpRequestConfig = new HttpRequestConfig.Builder()
+  .setBrightcoveAuthorizationToken("<span class="bcls-input">your jwt token</span>")
+  .build();
+</code></pre>
+        <p>
+          Authorizationトークンの値は、JSONWebトークンの値になります。
+        </p>
+      </li>
+      <li>
+        <p>
+          作成したら<code translate="No">HttpRequestConfig</code>オブジェクトを次のCatalogメソッドのいずれかに渡します。
+        </p>
+        <p>
+          ビデオリクエストの場合は、次のいずれかを使用します。
+        </p>
+        <pre class="line-numbers"><code class="language-java" translate="No">findVideoByID(String, HttpRequestConfig, VideoListener)
+</code></pre>
+        <pre class="line-numbers"><code class="language-java" translate="No">findVideoByReferenceID(String, HttpRequestConfig, VideoListener)
+</code></pre>
+        <p>
+          プレイリストリクエストの場合は、次のいずれかを使用します。
+        </p>
+        <pre class="line-numbers"><code class="language-java" translate="No">findPlaylistByID(String, HttpRequestConfig, PlaylistListener)
+</code></pre>
+        <pre class="line-numbers"><code class="language-java" translate="No">findPlaylistByReferenceID(String, HttpRequestConfig, PlaylistListener)
+</code></pre>
+        <p>
+          HLSeおよびWidevineライセンス取得のトークン使用の詳細は、SDKによって処理されます。
+        </p>
+        <aside class="bcls-aside bcls-aside--information">再生リストリクエストの場合、再生リスト内のすべての動画で同じトークンを使用する必要があります。今後のリリースでは、プレイリスト内の各動画に異なるトークンを割り当てることができます。ビデオ ID とトークンのマッピングは、お客様が管理する必要があります。NS <code translate="No">conid</code>で定義されているように<a href="https://general.support.brightcove.com/developer/create-json-web-token.html#Create_a_JSON_Web_Token">JWTトークンの主張</a>トークンに関連付けられたビデオID値です。</aside>
+      </li>
+    </ol>
+
+    <h3>コード例</h3>
+    <p>
+      次に、カタログリクエストを行うときに認証トークンを渡す方法を示す例を示します。
+    </p>
+    <pre class="line-numbers"><code class="language-java" translate="No">String myToken = &quot;...&quot;;
+HttpRequestConfig httpRequestConfig = new HttpRequestConfig.Builder()
+  .setBrightcoveAuthorizationToken(myToken)
+  .build();
+&hellip;
+
+Catalog catalog = new Catalog(eventEmitter, accountId, policyKey, playbackApiBaseUrl);
+catalog.findVideoByReferenceID(videoReferenceId, httpRequestConfig, new VideoListener(){...});
+</code></pre>
+
+    <h3>オフライン再生</h3>
+    <p>
+      オフラインカタログ<code translate="No">findVideo</code>、<code translate="No">requestPurchaseLicense</code>そして<code translate="No">requestRentalLicense</code>すべてのメソッドは<code translate="No">HttpRequestConfig</code>引数として。
+    </p>
+    <aside class="bcls-aside bcls-aside--tip">オフライン再生によるキー/ライセンス保護は、Androidv6.8.1以降のネイティブSDKでサポートされています。</aside>
+    <p>下記がその例です。</p>
+    <pre class="line-numbers"><code class="language-java" translate="No">private HttpRequestConfig httpRequestConfig;
+private String pasToken = &quot;<span class="bcls-input">your jwt token</span>&quot;;
+...
+HttpRequestConfig.Builder httpRequestConfigBuilder = new HttpRequestConfig.Builder();
+httpRequestConfigBuilder.setBrightcoveAuthorizationToken(pasToken);
+httpRequestConfig = httpRequestConfigBuilder.build();
+playlist.findPlaylist(catalog, httpRequestConfig, new PlaylistListener() {
+    @Override
+    public void onPlaylist(Playlist playlist) {
+        videoListAdapter.setVideoList(playlist.getVideos());
+        onVideoListUpdated(false);
+        brightcoveVideoView.addAll(playlist.getVideos());
+    }
+
+    @Override
+    public void onError(String error) {
+        String message = showToast(&quot;Failed to find playlist[%s]: %s&quot;, playlist.displayName, error);
+        Log.w(TAG, message);
+        onVideoListUpdated(true);
+    }
+});</code></pre>
+
+    <p>
+      詳細については、<a href="https://github.com/BrightcoveOS/android-player-samples/blob/master/brightcove-exoplayer/OfflinePlaybackSampleApp/src/main/java/com/brightcove/player/samples/offlineplayback/MainActivity.java">オフライン再生サンプルアプリを参照してください</a>。
+    </p>
+
+    <h3>回答</h3>
+    <p>
+      PAS には、次の応答が関連付けられています。
+    </p>
+    <ul>
+      <li>
+        200-ライセンスの続行が許可されています
+      </li>
+      <li>
+        401-ライセンス提供は続行できません
+      </li>
+    </ul>
+
+    <!-- <h3>Limitations</h3>
+    <p>
+      There is a limitation with the current release:
+    </p>
+    <ul>
+      <li>
+        Chromecast is not supported with key/license protection.
+      </li>
+    </ul> -->
+  </section>
+
+  <section class="bcls-section">
+    <h2 id="iOS_Using_Playback_Rights">iOS: 再生権の使用</h2>
+    <aside class="bcls-aside bcls-aside--information">注意:
+      <ul>
+        <li>この実装では、ポリシーキーで構成されたコンテンツ制限はすべて無視されます</li>
+      </ul>
+    </aside>
+
+    <p>
+      再生権限と制限をチェックする Playback API リクエストを実行するには、次の手順に従います。
+    </p>
+    <ol class="bcls-tasklist-restart">
+      <li>
+        <p>
+          <a href="https://github.com/BrightcoveOS/ios-player-samples/tree/master/Player/VideoCloudBasicPlayer">基本サンプルアプリから始めます</a>。
+        </p>
+      </li>
+      <li>
+        <p>
+          デフォルトでは、iOS 用のネイティブ SDK は、ポリシーキーがある場合、Playback API へのリクエストを行います。再生権限を利用するには、リクエストとともにポリシーキーを送信しないでください。
+        </p>
+        <p>
+          のインスタンスを作成し<code translate="No">BCOVPlaybackService</code>、ポリシーキーをに設定します<code translate="No">nil</code>。例を次に示します。
+        </p>
+        <pre>
+<code class="language-java" translate="No">let playbackService = BCOVPlaybackService(accountId: kViewControllerAccountID, policyKey: nil)</code></pre>
+      </li>
+      <li>
+        <p>
+          <strong>オプション</strong> :ランタイム制限を使用する場合は、JWTトークンを作成し、カタログリクエストで渡す必要があります。
+        </p>
+        <p>
+          JWTトークンを作成するには、次の手順に従います。<a href="https://apis.support.brightcove.com/playback-restrictions/getting-started/overview-playback-restrictions.html#Runtime_restrictions">実行時の制限</a>概要のセクション：Brightcoveの再生制限資料。
+        </p>
+        <p>
+          カタログリクエストでトークンを渡すには、を参照してください。<a href="#Using_License_Keys_Protection_iOS">ライセンスキー保護の使用：iOS</a>セクション。
+        </p>
+      </li>
+    </ol>
+  </section> 
+
+  <section class="bcls-section">
+    <h2 id="iOS_Using_License_Keys_Protection">iOS: ライセンスキー保護の使用</h2>
+
+    <p>キー/ライセンス保護を使用する場合は、認証トークンを渡すことができる再生サービスメソッドを使用する必要があります。これは、<code translate="No">authToken</code>パラメータ。</p>
+
+    <p>
+      ビデオリクエストの場合は、次のいずれかを使用します。
+    </p>
+    <pre class="line-numbers"><code class="language-objectivec" translate="No">- (void)findVideoWithVideoID:(NSString *)videoID authToken:(NSString *)authToken parameters:(NSDictionary *)parameters completion:(void (^)(BCOVVideo *video, NSDictionary *jsonResponse, NSError *error))completionHandler;
+</code></pre>
+    <pre class="line-numbers"><code class="language-objectivec" translate="No">- (void)findVideoWithReferenceID:(NSString *)referenceID authToken:(NSString *)authToken parameters:(NSDictionary *)parameters completion:(void (^)(BCOVVideo *video, NSDictionary *jsonResponse, NSError *error))completionHandler;
+</code></pre>
+
+    <p>
+      プレイリストリクエストの場合は、次のいずれかを使用します。
+    </p>
+    <pre class="line-numbers"><code class="language-objectivec" translate="No">- (void)findPlaylistWithPlaylistID:(NSString *)playlistID authToken:(NSString *)authToken parameters:(NSDictionary *)parameters completion:(void (^)(BCOVPlaylist *playlist, NSDictionary *jsonResponse, NSError *error))completionHandler;
+</code></pre>
+    <pre class="line-numbers"><code class="language-objectivec" translate="No">- (void)findPlaylistWithReferenceID:(NSString *)referenceID authToken:(NSString *)authToken parameters:(NSDictionary *)parameters completion:(void (^)(BCOVPlaylist *playlist, NSDictionary *jsonResponse, NSError *error))completionHandler;
+</code></pre>
+
+    <p>
+      HLSeおよびFairPlayライセンス取得のトークン使用の詳細は、SDKによって処理されます。
+    </p>
+    <aside class="bcls-aside bcls-aside--information">再生リストリクエストの場合、再生リスト内のすべての動画で同じトークンを使用する必要があります。今後のリリースでは、プレイリスト内の各動画に異なるトークンを割り当てることができます。ビデオ ID とトークンのマッピングは、お客様が管理する必要があります。NS <code translate="No">conid</code>で定義されているように<a href="https://general.support.brightcove.com/developer/create-json-web-token.html#Create_a_JSON_Web_Token">JWTトークンの主張</a>トークンに関連付けられたビデオID値です。</aside>
+
+    <p>
+      詳細については、<a href="/ios/reference/sdk/index.html#PlaybackAuthorizationService">再生認証サービス</a> iOS用ネイティブSDKリファレンスのセクション。
+    </p>
+
+    <h3>オフライン再生</h3>
+    <p>
+      オフライン再生で再生認証サービスを使用している場合、認証トークンを受け入れるFairPlayライセンスを更新するための新しい方法があります。
+    </p>
+    <pre class="line-numbers"><code class="language-objectivec" translate="No">// Request license renewal
+    [BCOVOfflineVideoManager.sharedManager renewFairPlayLicense:offlineVideoToken
+        video:video // recent video from Playback API or Playback Service class
+        authToken: authToken
+        Parameters: parameters
+        completion:^(BCOVOfflineVideoToken offlineVideoToken, NSError *error)
+    {
+        // handle errors
+    }];
+</code></pre>
+
+    <p>
+      ライセンスの更新が完了すると、渡されたのと同じオフラインビデオトークンを使用して完了ブロックが呼び出されます。アン<code translate="No">NSError</code>発生した問題を示します（エラーがない場合はnil）。
+    </p>
+
+    <p>
+      詳細については、<a href="https://github.com/brightcove/brightcove-player-sdk-ios/blob/master/OfflinePlayback.md#renewing-a-fairplay-license"> FairPlayライセンスの更新</a> iOS用ネイティブSDKリファレンスのセクション。
+    </p>
+
+    <h3>回答</h3>
+    <p>
+      PAS には、次の応答が関連付けられています。
+    </p>
+    <ul>
+      <li>
+        200-ライセンスの続行が許可されています
+      </li>
+      <li>
+        401-ライセンス提供は続行できません
+      </li>
+    </ul>
+
+  </section>
+
+  <!-- <section class="bcls-section">
+    <h2 id="Related_topics">Related topics</h2>
+    <ul>
+      <li>
+        <a href="/playback-rights/getting-started/overview-epa.html">Overview: Playback Rights Management Service</a>
+      </li>
+      <li>
+        <a href="/playback-rights/getting-started/implementing-epa.html">Implementing Playback Rights Management Service</a>
+      </li>
+      <li>
+        <a href="/playback-rights/guides/using-epa-with-bcp.html">Using Playback Rights with Brightcove Player</a>
+      </li>
+      <li>
+        <a href="/playback-authorization/guides/stream-concurrency.html">Implementing Stream Concurrency</a>
+      </li>
+    </ul>
+  </section> -->
+
+</article>

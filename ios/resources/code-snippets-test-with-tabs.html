@@ -1,0 +1,679 @@
+---
+title: 'iOS用ネイティブSDKを使用してスニペットをコーディングする' 
+description: このトピックでは、SDK を使用して開発する際のリファレンスとして役立つコードスニペットのコレクションを紹介します。より詳細な解決策については、を参照してください。<a href="https://github.com/BrightcoveOS/ios-player-samples"> iOSプレーヤーのサンプル</a>。
+parent: Resources 
+grandparent: iOS開発 
+---
+
+<style>
+  / *コードタブのCSS * / / *一時的なコードブロック-テスト後に削除* / .tabinator { background: #fff; padding: 20px; font-family: Open Sans; } .tabinator入力{ display: none; } .tabinatorラベル{ box-sizing: border-box; display: inline-block; padding: 10px 25px; color: #999; margin-bottom: -1px; margin-left: -1px; } .tabinator label：before { content:''; display:block; width:100%; height:15px; background-color:#fff; position:absolute; bottom:-11px; left:0; z-index:10; } .tabinator label：hover { color: #666; cursor: pointer; } .tabinator input：checked + label { position: relative; color: #000; background: #fff; border: 1px solid #bbb; border-bottom: 1px solid #fff; border-radius: 5px 5px 0 0; } .tabinator input：checked + label：after { display: block; content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; box-shadow: 0 0 15px #939393; } .tabinator＃content1、＃content2、＃content3、＃content4 { display: none; border-top: 1px solid #bbb; padding: 20px; }＃tab1：checked〜＃content1、＃tab2：checked〜＃content2 { display: block; box-shadow: 0 0 15px #939393; }＃tab3：checked〜＃content3、＃tab4：checked〜＃content4 { display: block; box-shadow: 0 0 15px #939393; } / *コードタブのCSSを終了します* /
+</style>
+
+<h1>{{ page.title }}</h1>
+<article class="bcls-article">
+  <summary>{{ page.description }}</summary>
+
+<section class="bcls-section" id="top">
+<h3>目次</h3>
+<!-- <h5 class="bcls-question">Accessibility</h5>
+
+<ul class="bcls-answer">
+	<li><a href="#VoiceOver_support">VoiceOver support</a></li>
+</ul> -->
+<details style="padding:0;">
+    <summary>広告</summary>
+   <ul>
+      <li><a href="#Media_progress_values">メディアの進行状況値</a></li>
+    </ul>
+</details>
+<br/>
+
+<details style="padding:0;">
+    <summary>アナリティクス</summary>
+    <ul>
+      <li><a href="#Google_Analytics">グーグルアナリティクス</a></li>
+    </ul>
+</details>
+<br/>
+
+<details style="padding:0;">
+    <summary>キャプション</summary>
+    <ul>
+      <li><a href="#Customizing_the_closed_captions_button">クローズドキャプションボタンのカスタマイズ</a></li>
+    </ul>
+</details>
+<br/>
+
+<details style="padding:0;">
+    <summary>コンテンツセキュリティ (DRM)</summary>
+   <ul>
+      <li><a href="#Displaying_FairPlay_content_on_an_external_screen">FairPlay コンテンツを外部画面に表示する</a></li>
+    </ul>
+</details>
+<br/>
+
+<details style="padding:0;">
+    <summary>キューポイント</summary>
+    <ul>
+      <li><a href="#Programmatically_adding_cue_points">プログラムによるキューポイントの追加</a></li>
+    </ul>
+</details>
+<br/>
+
+<details style="padding:0;">
+    <summary>再生</summary>
+    <ul>
+      <li><a href="#Custom_controls_for_AirPlay">AirPlay のカスタムコントロール</a></li>
+      <li><a href="#Limiting_the_bitrate">ビットレートの制限</a></li>
+      <li><a href="#Looping_a_video">ビデオをループする</a></li>
+      <li><a href="#Media_progress_values">メディアの進行状況値</a></li>
+      <!-- <li><a href="#Setting_the_buffer_size">Setting the buffer size</a></li> -->
+      <li><a href="#Paging_with_the_Playback_API">再生 API を使用したページング</a></li>
+      <li><a href="#Removing_the_player">プレーヤーの削除</a></li>
+      <li><a href="#Setting_the_playback_rate">再生レートの設定</a></li>
+      <li><a href="#Setting_VR_Goggles_mode_for_360_videos">360° 動画の VR ゴーグルモードの設定</a></li>
+    </ul>
+</details>
+<br/>
+
+<details style="padding:0;">
+    <summary>プレイリスト</summary>
+   <ul>
+      <li><a href="#Managing_videos_in_a_playlist">プレイリストの動画を管理する</a></li>
+    </ul>
+</details>
+<br/>
+
+<details style="padding:0;">
+    <summary>スタイル設定</summary>
+    <ul>
+      <li><a href="#Changing_the_background_color">背景色の変更</a></li>
+    </ul>
+</details>
+<br/>
+</section>
+
+<section class="bcls-section">
+<h2 id="Custom_controls_for_AirPlay">AirPlay のカスタムコントロール</h2>
+
+<p><a href="/ios/reference/sdk/index.html#PlayerUI">Brightcove PlayerUI コントロールを使用する場合は</a>、すべて設定されています。AirPlay 機能はすぐに使用できるので、ユーザーは Apple TV を使用して高品位ディスプレイにビデオをストリーミングできます。</p>
+
+<p>カスタムコントロールを使用している場合は、以下の手順を実行できます。</p>
+
+<ol class="bcls-tasklist-restart">
+	<li>
+	<p>AirPlay については、<a href=""> Apple の AirPlay 開発者向けドキュメントを参照してください</a>。</p>
+	</li>
+	<li>
+	<p>AVPlayer <code translate="No">allowsExternalPlayback </code>のプロパティを設定するには、<code translate="No">allowsExternalPlayback </code>再生コントローラのプロパティを使用します。</p>
+
+	<pre>
+<code class="language-swift" translate="No"><a href="/ios/reference/sdk/Protocols/BCOVPlaybackController.html#//api/name/allowsExternalPlayback">_playbackController.allowsExternalPlayback = YES;</a></code></pre>
+	</li>
+	<li>
+	<p>AirPlay ルーターコントロールをセットアップし、その選択を処理します。詳細については、<a href="https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/AirPlayGuide/Introduction/Introduction.html"> Apple の AirPlay の概要ドキュメントを参照してください</a>。</p>
+	</li>
+</ol>
+</section>
+
+
+
+<section class="bcls-section">
+<h2 id="Customizing_the_closed_captions_button">クローズドキャプションボタンのカスタマイズ</h2>
+
+<p><a href="/ios/reference/sdk/index.html#PlayerUI">BCovPlayerUI サンプルコードは</a>、iOS 版ネイティブ SDK を使用するときに、Brightcoveプレーヤーをカスタマイズする方法を示しています。詳細については、ネイティブ SDK リファレンスドキュメントの「<a href="/ios/reference/sdk/index.html#PlayerUI"> PlayerUI コントロールのカスタマイズ</a>」セクションを参照してください。</p>
+
+<p>PlayerUI を使用してクローズドキャプションボタンをカスタマイズするには、次の手順に従います。</p>
+
+<ol class="bcls-tasklist-restart">
+	<li>
+	<p><a href="https://github.com/BrightcoveOS/ios-player-samples/tree/master/Player/VideoCloudBasicPlayer">基本的なビデオ再生アプリから始めます</a>。</p>
+	</li>
+	<li>
+	<p>ポリシーキー、アカウント ID、ビデオ ID の値を置き換えます。アカウントから、テキストトラックがある動画を選択します。</p>
+	</li>
+	<li>
+	<p>標準の VOD レイアウトでプレーヤービューを設定します。</p>
+  <!-- tabs inline -->
+  <div class = "tabinator">
+    <input type = "radio" id = "tab1" name = "tabs" checked>
+    <label for = "tab1">Obj-C</label>
+    <input type = "radio" id = "tab2" name = "tabs">
+    <label for = "tab2">スウィフト</label>
+  <div id = "content1">
+    <pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Set up our player view. Create with a standard VOD layout.
+BCOVPUIPlayerView *playerView = [[BCOVPUIPlayerView alloc] initWithPlaybackController:self.playbackController options:nil controlsView:
+[BCOVPUIBasicControlView basicControlViewWithVODLayout] ];</code></pre>
+  </div>
+  <div id = "content2">
+    <pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Customize the CC button.
+BCOVPUIButton *ccButton = playerView.controlsView.closedCaptionButton;
+ccButton.titleLabel.font = [UIFont systemFontOfSize:14.];
+ccButton.primaryTitle = @"CC";
+[ccButton showPrimarytitle: YES];</code></pre>
+  </div>
+</div>
+
+<!-- tabs inline 2-->
+  <div class = "tabinator">
+    <input type = "radio" id = "tab3" name = "tabs" checked>
+    <label for = "tab3">Obj-C</label>
+    <input type = "radio" id = "tab4" name = "tabs">
+    <label for = "tab4">スウィフト</label>
+  <div id = "content3">
+    <pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Set up our player view. Create with a standard VOD layout.
+BCOVPUIPlayerView *playerView = [[BCOVPUIPlayerView alloc] initWithPlaybackController:self.playbackController options:nil controlsView:
+[BCOVPUIBasicControlView basicControlViewWithVODLayout] ];</code></pre>
+  </div>
+  <div id = "content4">
+    <pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Customize the CC button.
+BCOVPUIButton *ccButton = playerView.controlsView.closedCaptionButton;
+ccButton.titleLabel.font = [UIFont systemFontOfSize:14.];
+ccButton.primaryTitle = @"CC";
+[ccButton showPrimarytitle: YES];</code></pre>
+  </div>
+</div>
+
+	<!-- <pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Set up our player view. Create with a standard VOD layout.
+BCOVPUIPlayerView *playerView = [[BCOVPUIPlayerView alloc] initWithPlaybackController:self.playbackController options:nil controlsView:
+[BCOVPUIBasicControlView basicControlViewWithVODLayout] ];</code></pre> -->
+	</li>
+	<li>
+	<p><code translate="No">closedCaptionButton</code>はと宣言され<code translate="No">BCOVPUIButton</code>、<code translate="No">UIButton</code>これはおよびのサブクラスです。カスタマイズ方法を 3 つ追加しました。BCovPlayerUI コントロールをカスタマイズするときは、いつでもネイティブプレーヤー API を使用できる場所で使用する必要があります。カスタマイズしたコードは次のようになります。</p>
+  <!-- tabs test 1 -->
+  <!-- don't delete these breaks! -->
+  <!-- <br />
+&nbsp; -->
+<div class="tabs">
+<ul class="tab-links">
+	<li class="active">Obj-C<a href="#tab1"></a></li>
+	<li><a href="#tab2">スウィフト</a></li>
+</ul>
+
+<div class="tab-content">
+  <div id="tab1" class="tab active">
+    <pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Customize the CC button.
+BCOVPUIButton *ccButton = playerView.controlsView.closedCaptionButton;
+ccButton.titleLabel.font = [UIFont systemFontOfSize:14.];
+ccButton.primaryTitle = @"CC";
+[ccButton showPrimarytitle: YES];</code></pre>
+  </div>
+  <div id="tab2" class="tab">
+    <pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Customize the CC button.
+BCOVPUIButton *ccButton = test content 2;
+[ccButton showPrimarytitle: YES];</code></pre>
+  </div>
+</div>
+</div>
+<!-- end tabs test 1 -->
+
+	<!-- <pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Customize the CC button.
+BCOVPUIButton *ccButton = playerView.controlsView.closedCaptionButton;
+ccButton.titleLabel.font = [UIFont systemFontOfSize:14.];
+ccButton.primaryTitle = @"CC";
+[ccButton showPrimarytitle: YES];</code></pre> -->
+	</li>
+</ol>
+
+<!-- tabs test 2-->
+  <!-- don't delete these breaks! -->
+  <!-- <br />
+&nbsp; -->
+<div class="tabs">
+<ul class="tab-links">
+	<li class="active">Obj-C<a href="#tab5"></a></li>
+	<li><a href="#tab6">スウィフト</a></li>
+</ul>
+
+<div class="tab-content">
+  <div id="tab5" class="tab active">
+    <pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Customize the CC button.
+BCOVPUIButton *ccButton = test content 3;
+[ccButton showPrimarytitle: YES];</code></pre>
+  </div>
+  <div id="tab6" class="tab">
+    <pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Customize the CC button.
+BCOVPUIButton *ccButton = test content 4;
+[ccButton showPrimarytitle: YES];</code></pre>
+  </div>
+</div>
+</div>
+</section>
+
+<section class="bcls-section">
+<h2 id="Displaying_FairPlay_content_on_an_external_screen">FairPlay コンテンツを外部画面に表示する</h2>
+
+<p>AVアダプタとHDMIケーブルを使用して外付けディスプレイをiOSデバイスに接続すると、デフォルトの動作ではiOS画面がミラーリングされます。例外は、Fairplay で保護されたビデオを使用する場合です。Appleはミラーリングを禁止します（<a href="https://developer.apple.com/videos/play/wwdc2015/502/"> WWDC 2015、セッション502 </a>）。</p>
+
+<p>FairPlay で保護された動画を表示するには、Brightcove 再生コントローラを介して公開される AVPlayer プロパティを設定して、FairPlay 動画を外部ディスプレイで再生できるようにします。ビデオが全画面モードで再生されます。これらのプロパティの設定例を次に示します。</p>
+
+<pre>
+<code class="language-swift" translate="No"><a href="/ios/reference/sdk/Protocols/BCOVPlaybackController.html#//api/name/usesExternalPlaybackWhileExternalScreenIsActive">playbackController.allowsExternalPlayback = YES;
+playbackController.usesExternalPlaybackWhileExternalScreenIsActive = YES;</a></code></pre>
+</section>
+
+<section class="bcls-section">
+<h2 id="Google_Analytics">Google Analytics</h2>
+
+<p>Brightcoveプレーヤーとカタログクラスを使用している場合、動画分析は自動的に収集され、Video Cloud Analytics モジュールに表示されます。その他の指標については、Google アナリティクスをアプリに追加できます。</p>
+
+<p>Google アナリティクスをアプリと統合するには、次の手順に従います。</p>
+
+<ol class="bcls-tasklist-restart">
+	<li>Google のドキュメントを確認して<a href="https://developers.google.com/analytics/devguides/collection/ios/v3/#get-config"> iOS アプリにアナリティクスを追加してください</a>。</li>
+	<li>
+	<p>Googleアナリティクスを使用して、GoogleのFirebase SDKを使用して動画の再生を追跡する方法の1つは次のとおりです。</p>
+
+	<pre class="line-numbers" data-start="1">
+<code class="language-swift" translate="No">// This snippet shows one way to track video playback
+// using the Firebase SDK from Google Analytics with
+// the lifecycle event playback controller delegate method.
+- (void)playbackController:(id&lt;BCOVPlaybackController&gt;)controller playbackSession:(id&lt;BCOVPlaybackSession&gt;)session didReceiveLifecycleEvent:(BCOVPlaybackSessionLifecycleEvent *)lifecycleEvent
+{
+// Common parameters
+NSString *video_name = session.video.properties[kBCOVVideoPropertyKeyName];
+NSString *video_ID = session.video.properties[kBCOVVideoPropertyKeyId];
+
+// Session is ready to play
+if ([kBCOVPlaybackSessionLifecycleEventReady isEqualToString:lifecycleEvent.eventType])
+{
+	[FIRAnalytics logEventWithName:@"bcov_video_ready"
+    parameters:@{
+        @"bcov_video_name": video_name,
+        @"bcov_video_id": video_ID
+    }];
+}
+
+// Session encountered an error
+if ([kBCOVPlaybackSessionLifecycleEventError isEqualToString:lifecycleEvent.eventType])
+{
+	NSError *error = lifecycleEvent.properties[kBCOVPlaybackSessionEventKeyError];
+	int error_code = error.code;
+	[FIRAnalytics logEventWithName:@"bcov_video_playback_error"
+    parameters:@{
+        @"bcov_video_name": video_name,
+        @"bcov_video_id": video_ID,
+        @"bcov_video_error_code": @(error_code)
+    }];
+}
+
+// Session has completed
+if ([kBCOVPlaybackSessionLifecycleEventTerminate isEqualToString:lifecycleEvent.eventType])
+{
+	[FIRAnalytics logEventWithName:@"bcov_video_terminate"
+    parameters:@{
+        @"bcov_video_name": video_name,
+        @"bcov_video_id": video_ID
+     }];
+}
+}</code></pre>
+	</li>
+</ol>
+
+<p>&nbsp;</p>
+</section>
+
+<section class="bcls-section">
+<h2 id="Limiting_the_bitrate">ビットレートの制限</h2>
+
+<p>HLS マニフェストでどのソース（レンディション）がによって選択されるかを制御することはできませんが<code translate="No">AVPlayer </code>、再生時にビットレートキャップを付けることはできます。これにより、プレーヤーは指定されたビットレートを超えるビットレートのソース (レンディション) を使用できなくなります。</p>
+
+<p>を<code translate="No">preferredPeakBitRate </code>、指定されたのネットワーク帯域幅消費量の制限値（ビット/秒）に設定します<code translate="No">AVPlayerItem </code>。</p>
+
+<p>次のいずれかの宣言を使用します。</p>
+
+<pre class="line-numbers">
+<code class="language-swift" translate="No">// Swift
+var preferredPeakBitRate: Double
+// Obj-C
+@property(nonatomic) double preferredPeakBitRate</code></pre>
+</section>
+
+<section class="bcls-section">
+<h2 id="Looping_a_video">ビデオをループする</h2>
+
+<p>場合によっては、ビデオを自動的に再生したい場合があります。これを行うには、「ビデオの終了」ライフサイクルイベントを取得し、先頭にシークしてもう一度再生します。</p>
+
+<p>このコードは、このメソッドを使用して PlaybackController のデリゲートをオブジェクトに設定していることを前提としています。</p>
+
+<pre class="line-numbers">
+<code class="language-swift" translate="No">- (void)playbackController:(id&lt;BCOVPlaybackController&gt;)controller playbackSession:(id&lt;BCOVPlaybackSession&gt;)session didReceiveLifecycleEvent:(BCOVPlaybackSessionLifecycleEvent *)lifecycleEvent
+{
+  if ([kBCOVPlaybackSessionLifecycleEventEnd isEqualToString:lifecycleEvent.eventType])
+  {
+    [controller seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
+    if (finished)
+    	{
+        [controller play];
+    	}
+    }];
+  }
+}</code></pre>
+</section>
+
+<section class="bcls-section">
+<h2 id="Managing_videos_in_a_playlist">プレイリストの動画を管理する</h2>
+
+<p>ビデオのプレイリストを管理する 1 つの方法は、ビデオオブジェクトをテーブルに格納することです。ユーザーがテーブルからビデオを選択すると、テーブルの行にはビデオオブジェクトが含まれます。</p>
+
+<p>ここではそれがどのように動作するかについての概要です：</p>
+
+<ol class="bcls-tasklist-restart">
+	<li>
+	<p>アカウントからプレイリストを取得します。</p>
+
+	<pre class="line-numbers">
+<code class="language-objectivec" translate="No">- (void)retrievePlaylist
+{
+[self.refreshControl beginRefreshing];
+
+// Retrieve a playlist through the BCOVPlaybackService
+BCOVPlaybackServiceRequestFactory *playbackServiceRequestFactory = [[BCOVPlaybackServiceRequestFactory alloc]         initWithAccountId:kDynamicDeliveryAccountID
+		policyKey:kDynamicDeliveryPolicyKey];
+BCOVPlaybackService *playbackService = [[BCOVPlaybackService alloc] initWithRequestFactory:playbackServiceRequestFactory];
+
+[playbackService findPlaylistWithReferenceID:kDynamicDeliveryPlaylistRefID
+		parameters:nil
+		completion:^(BCOVPlaylist *playlist, NSDictionary *jsonResponse, NSError *error)
+{
+	 [self.refreshControl endRefreshing];
+
+	 NSLog(@"JSON Response:\n%@", jsonResponse);
+
+	 if (playlist)
+	 {
+      self.currentVideos = playlist.videos.mutableCopy;
+      self.currentPlaylistTitle = playlist.properties[@"name"];
+      self.currentPlaylistDescription = playlist.properties[@"description"];
+
+      NSLog(@"Retrieved playlist containing %d videos", (int)self.currentVideos.count);
+
+      [self usePlaylist:self.currentVideos];
+	 }
+	 else
+	 {
+      NSLog(@"No playlist for ID %@ was found.", kDynamicDeliveryPlaylistRefID);
+	 }
+
+}];
+}</code></pre>
+	</li>
+	<li>
+	<p>現在のプレイリストのビデオに関連する情報を格納するコンテナを再初期化します。</p>
+	</li>
+	<li>
+	<p>テーブルビューが選択されると、行のインデックスを使用して新しいが作成されます<code translate="No">videoDictionary</code>。次に、辞書にビデオを依頼してください。ビデオが null でない場合は、にビデオをロードします<code translate="No">playbackController</code>。</p>
+
+	<pre class="line-numbers">
+<code class="language-objectivec" translate="No">// Play the video in this row when selected
+- (IBAction)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
+NSDictionary *videoDictionary = self.videosTableViewData[ (int)indexPath.row ];
+BCOVVideo *video = videoDictionary[@"video"];
+
+  if (video != nil)
+  {
+  	[self.playbackController setVideos:@[ video ]];
+  }
+}</code></pre>
+	</li>
+</ol>
+
+<p>プレイリストを操作するには、プレイリストをテーブルなどの別のオブジェクトに保存できます。ユーザーの操作に基づいて、オブジェクトのインデックスをナビゲートし、適切なビデオを選択できます。</p>
+
+<aside class="bcls-aside bcls-aside--tip">完全なコード例については、を参照してください。<a href="https://github.com/BrightcoveOS/ios-player-samples/tree/master/Offline">オフラインプレーヤー</a>サンプル。</aside>
+</section>
+
+<section class="bcls-section">
+<h2 id="Media_progress_values">メディアの進行状況値</h2>
+
+<p>メディアの再生中に、Player SDK 進行状況デリゲートメソッドに報告される値には、負の無限大と正の無限大の最終値が含まれます。これらの値は、プリロール広告とポストロール広告を処理するときに使用されます。</p>
+
+<p>これらの値が重要でない場合、または独自の進捗追跡を妨げている場合は、次のような条件文で簡単に無視できます。</p>
+
+<pre class="line-numbers">
+<code class="language-swift" translate="No"><a href="/ios/reference/sdk/Protocols/BCOVPlaybackControllerBasicDelegate.html#//api/name/playbackController:playbackSession:didProgressTo:">- (void)playbackController:(id&lt;BCOVPlaybackController&gt;)controller playbackSession:(id&lt;BCOVPlaybackSession&gt;)session didProgressTo:(NSTimeInterval)progress
+{
+if (progress &lt; 0.0 || progress &gt;= INFINITY)
+return;
+// Your code here
+}</a></code></pre>
+</section>
+
+<section class="bcls-section">
+<h2 id="Paging_with_the_Playback_API">再生 API を使用したページング</h2>
+
+<p>再生 API から Video Cloud コンテンツを取得するときに、プレイリストのページングを実装できます。</p>
+
+<p>プレイリストの一連の動画をページに移動するには、次のリクエスト URL パラメータを使用します。</p>
+
+<ul>
+	<li><code translate="No"><a href="https://apis.support.brightcove.com/playback/getting-started/overview-playback-api.html#playlistRequests">limit</a> </code> -再生APIから返す動画の数を定義します</li>
+	<li><code translate="No"><a href="https://apis.support.brightcove.com/playback/getting-started/overview-playback-api.html#playlistRequests">offset</a> </code> -再生APIから再生リストでスキップする動画の数を設定します</li>
+</ul>
+
+<p>この例では、再生リスト内の 10 番目の動画から 6 つの動画を返します。</p>
+
+<pre class="line-numbers">
+<code class="language-objectivec" translate="No">NSDictionary *params =
+@{
+@"limit": @6,
+@"offset": @9
+};
+[playbackService findPlaylistWithReferenceID:playlistRefID
+parameters:params
+completion:^(BCOVPlaylist *playlist, NSDictionary *jsonResponse, NSError *error)
+{ ...</code></pre>
+</section>
+
+<section class="bcls-section">
+<h2 id="Programmatically_adding_cue_points">プログラムによるキューポイントの追加</h2>
+
+<p>Video Cloud のお客様は、ビデオへのキューポイントの追加ドキュメントに示すように、Video Cloud Studio <a href="https://studio.support.brightcove.com/media/working-cue-points-media-module.html">を使用してビデオにキューポイントを追加できます</a>。</p>
+
+<p>プログラムを使用してビデオにキューポイントを追加することもできます。以下のコードは、Playback API から返されたビデオに 4 分ごとのインターバルキューポイントを追加します。</p>
+
+<pre class="line-numbers">
+<code class="language-swift" translate="No"><a href="/ios/reference/sdk/Protocols/BCOVVideo.html">// programmatically add cue points to a video
+- (void)requestContentFromPlaybackService
+{
+[self.service findVideoWithVideoID:kViewControllerVideoID parameters:nil completion:^(BCOVVideo *video, NSDictionary *jsonResponse, NSError *error) {
+if (video)
+{
+<span class="bcls-highlight">// Get the video duration from the properties dictionary
+NSNumber *durationNumber = video.properties[@"duration"]; // milliseconds
+float duration = durationNumber.floatValue / 1000.0; // convert to seconds
+video = [video update:^(id&lt;BCOVMutableVideo&gt; mutableVideo)
+{
+// Add quarterly interval cue points of your own type
+BCOVCuePoint *cp1 = [[BCOVCuePoint alloc] initWithType:@"<span class="bcls-input">your cue point type</span>" position:CMTimeMake(duration * 250, 1000)];
+BCOVCuePoint *cp2 = [[BCOVCuePoint alloc] initWithType:@"<span class="bcls-input">your cue point type</span>" position:CMTimeMake(duration * 500, 1000)];
+BCOVCuePoint *cp3 = [[BCOVCuePoint alloc] initWithType:@"<span class="bcls-input">your cue point type</span>" position:CMTimeMake(duration * 750, 1000)];
+BCOVCuePoint *cp4 = [[BCOVCuePoint alloc] initWithType:@"<span class="bcls-input">your cue point type</span>" position:CMTimeMake(duration * 1000, 1000)];
+// Create new cue point collection using existing cue points and new cue points
+NSMutableArray *newCuePoints = [[NSMutableArray alloc] initWithArray:mutableVideo.cuePoints.array];
+[newCuePoints addObject:cp1];
+[newCuePoints addObject:cp2];
+[newCuePoints addObject:cp3];
+[newCuePoints addObject:cp4];
+mutableVideo.cuePoints = [[BCOVCuePointCollection alloc] initWithArray:newCuePoints];
+}];</span>
+[self.playbackController setVideos:@[ video ]];
+}
+else
+{
+NSLog(@"ViewController Debug - Error retrieving video: `%@`", error);
+}
+}];
+}</a></code></pre>
+
+<p>の値に注意してください<code translate="No">your cue point type </code>を使用していない限り、任意の文字列値にすることができます<a href="/ios/basics/overview-brightcove-player-sdk-ios.html#Integrations">iOSプラグイン</a>。詳細については、<a href="/ios/reference/sdk/Protocols/BCOVCuePoint.html#//api/name/type"> BCovCuePoint プロトコルリファレンスのドキュメントを参照してください</a>。</p>
+
+<p>IMA プラグインでキューポイントを使用している場合は、iOS 用 Native SDK 用の IMA プラグインノートの「<a href="https://github.com/brightcove/brightcove-player-sdk-ios-ima#vast-and-vmapserver-side-ad-rules"> VAST および VMap/サーバー側広告ルール</a>」セクションを参照してください。<a href="https://github.com/brightcove/brightcove-player-sdk-ios-ima/blob/06bb6f8dff6075340737017a966ad19b20bf6adb/ios/BrightcoveIMA.framework/Headers/BCOVIMAComponent.h#L39-L42">IMA サンプルアプリには</a>、IMA 広告キューポイントに必要な値が表示されます。</p>
+
+<p>以下のコードは、キューポイントをリッスンし、メッセージを表示します。</p>
+
+<pre class="line-numbers">
+<code class="language-swift" translate="No"><a href="/ios/reference/sdk/Protocols/BCOVCuePoint.html">// listen for cue points and display them
+-(void)playbackController:(id&lt;BCOVPlaybackController&gt;)controller playbackSession:(id&lt;BCOVPlaybackSession&gt;)session didPassCuePoints:(NSDictionary *)cuePointInfo {
+BCOVCuePointCollection *cpc = cuePointInfo[@"kBCOVPlaybackSessionEventKeyCuePoints"];
+for (BCOVCuePoint *cp in cpc) {
+  if ([cp.type isEqualToString:@"<span class="bcls-input">your cue point type</span>"])
+    {
+    NSLog(@"Found your cue point at %f", CMTimeGetSeconds(cp.position));
+    }
+  }
+}</a></code></pre>
+</section>
+<!-- <section class="bcls-section" id="Setting_the_buffer_size">
+		<h2>Setting the buffer size</h2>
+		<p>You may consider increasing the buffer length to eliminate buffering in the player if the delivery of the next segment is delayed from the CDN. But, you may not be able to do anything better manually that HLS already does.</p>
+		<p>The <code translate="No">AVPlayer</code> contains the <code translate="No">AVPlayerItem</code>, essentially the video being played, that contains the <code translate="No">loadedTimeRanges</code> property. This tells you how much is buffered.</p>
+		<p>HLS is designed to play right away and drop quality if it can't keep up. This way, it does not need to preload a buffer. If it can't keep up, it will load as much of the video as it can at the best quality to prevent interruption.</p>
+		</section> -->
+
+<section class="bcls-section">
+<h2 id="Removing_the_player">プレーヤーの削除</h2>
+
+<p>プレイヤーとビューを削除したい場合があります。</p>
+<p>
+  <code translate="No">BCOVPlaybackController</code>の所有権を持つビューコントローラの割り当てを解除すると、再生コントローラの割り当ても解除されます。これを行うには、スーパービューからプレーヤービューを削除し、再生コントローラポインタをに設定します<code translate="No">nil</code>。
+</p>
+<p>
+  コードの例は次のとおりです。
+</p>
+
+<pre>
+<code class="language-objectivec" translate="No">playerView?.removeFromSuperview()
+playerView = nil
+playbackController = nil</code></pre>
+</section>
+
+<section class="bcls-section">
+<h2 id="Setting_the_playback_rate">再生レートの設定</h2>
+
+<p>再生速度を制御するには、<code translate="No">rate </code>のプロパティ<code translate="No">AVPlayer </code>セッションで公開されたクラス。</p>
+
+<p>デフォルトでは、再生レートは一定間隔（0.50、0.67、1.0、1.25、1.50、2.0）にのみ設定できます。<a href="https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithm">AudioTimePitchAlgorithm </a>を設定すると、より詳細なレート値（1.7 など）を使用できます。詳細については、この<a href="https://stackoverflow.com/questions/6630356/avplayer-rate-property-does-not-work"> stackoverflow のディスカッションを参照してください</a>。</p>
+
+<pre>
+<code class="language-objectivec" translate="No">avPlayerItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;</code></pre>
+
+<aside class="bcls-aside bcls-aside--information">
+  <p>
+    <code translate="No">varispeed</code>このサンプルではプロパティ型が使用されますが、<a href="https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithm"> AvaudioTimePitchAlgorithm </a>クラスには、次の 4 つのプロパティタイプを使用できます。
+  </p>
+  <ul>
+    <li>
+      <a href="https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithm/1621212-lowqualityzerolatency">lowQualityZeroLatency </a>
+    </li>
+    <li>
+      <a href="https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithm/1388153-spectral">スペクトル</a>
+    </li>
+    <li>
+      <a href="https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithm/1387220-timedomain">timeDomain </a>
+    </li>
+    <li>
+      <a href="https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithm/1387887-varispeed">varispeed </a>
+    </li>
+  </ul>
+  <p>
+    <code translate="No">varispeed</code>このオプションはピッチ補正を提供しないことに注意してください。これにより、1.7 などの高い再生レートでオーディオが不自然に高くなる可能性があります。あなたのニーズに最適なプロパティオプションを選択します。
+  </p>
+</aside>
+
+<p>の場合<code translate="No">BCOVPlaybackSession </code>、コードは次のようになります。</p>
+
+<pre class="line-numbers">
+<code class="language-objectivec" translate="No">- (void)playbackController:(id&lt;BCOVPlaybackController&gt;)controller
+  playbackSession:(id&lt;BCOVPlaybackSession&gt;)session didReceiveLifecycleEvent:(BCOVPlaybackSessionLifecycleEvent *)lifecycleEvent {
+
+  if ( [lifecycleEvent.eventType isEqualToString:kBCOVPlaybackSessionLifecycleEventReady] ) {
+    NSLog(@"%@ at time %f", kBCOVPlaybackSessionLifecycleEventReady, CMTimeGetSeconds([session.player currentTime]));
+    AVPlayerItem * avPlayerItem = [session.player currentItem];
+    avPlayerItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
+    session.player.rate = 1.7;
+  }
+}</code></pre>
+
+<aside class="bcls-aside bcls-aside--information">iOS用ネイティブSDKは、再生速度の負の値をサポートしていません（つまり、ビデオの逆再生はサポートしていません）。
+<!-- <p>Notes</p>
+<ul>
+  <li>For iOS6, a stream can only play at 2X if <code translate="No">session.player.currentItem.canPlayFastForward </code> returns <strong>YES</strong>.</li>
+	<li>For iOS7, you can play up to 2X always, but it won't go higher unless <code translate="No">session.player.currentItem.canPlayFastForward </code> returns <strong>Yes</strong>.</li>
+	<li>For more information about managing playback, see Apple's <a href="https://developer.apple.com/library/ios/documentation/AVFoundation/Reference/AVPlayer_Class/index.html#//apple_ref/occ/instp/AVPlayer/rate">AVPlayer Class Reference</a>.</li>
+</ul> -->
+</aside>
+</section>
+
+<section class="bcls-section">
+<h2 id="Setting_VR_Goggles_mode_for_360_videos">360° 動画の VR ゴーグルモードの設定</h2>
+
+<p>360°ビデオを再生する場合、ユーザーはコントロールバーの [Video 360] ボタンを選択して VR ゴーグルモードに切り替えることができます。再生を開始する前に、これをプログラムで実行することもできます。あなたは更新することによってこれを行うことができます<code translate="No">BCOVPlaybackController </code>プロトコルの<code translate="No">viewProjection </code>次のようにプロパティ：</p>
+
+<pre class="line-numbers">
+<code class="language-objectivec" translate="No"><a href="/ios/reference/sdk/Protocols/BCOVPlaybackController.html">- (void)playbackController:(id&lt;BCOVPlaybackController&gt;)controller didAdvanceToPlaybackSession:(id&lt;BCOVPlaybackSession&gt;)session
+{
+BCOVVideo360ViewProjection *viewProjection = [self.playbackController.viewProjection copy];
+[viewProjection setProjectionStyle:BCOVVideo360ProjectionStyleVRGoggles];
+[self.playbackController setViewProjection:viewProjection];
+}</a></code></pre>
+
+<aside class="bcls-aside bcls-aside--information">コントローラの投影スタイルをで設定する必要があることに注意してください。<code translate="No">didAdvanceToPlaybackSession </code>デリゲートメソッド。</aside>
+</section>
+<!-- <section class="bcls-section">
+<h2 id="VoiceOver_support">VoiceOver support</h2>
+
+<p>Apple's <a href="https://www.apple.com/accessibility/iphone/vision/">VoiceOver app</a>, which is integrated in iOS, allows visually impaired users to hear a description of everything that is on the screen.</p>
+
+<p>The built-in playback controls for Brightcove Native SDK for iOS come with accessibility labels which have no default text values. If you want to take advantage of VoiceOver, you can add your own custom text values. The UIControl objects can be found in the following:</p>
+
+<ul>
+	<li>All the normal playback controls are found in the <a href="/ios/reference/sdk/Classes/BCOVPUIPlayerView.html#//api/name/controlsView">BCOVPUIBasicControlView *controlsView</a> property of the <a href="/ios/reference/sdk/Classes/BCOVPUIPlayerView.html">BCOVPUIPlayerView</a>.</li>
+	<li>All of the ad controls are found in the <a href="/ios/reference/sdk/Classes/BCOVPUIPlayerView.html#//api/name/adControlsView">BCOVPUIAdControlView *adControlsView</a> property of the <a href="/ios/reference/sdk/Classes/BCOVPUIPlayerView.html">BCOVPUIPlayerView</a>.</li>
+</ul>
+
+<p>This example shows how to customize the accessibility values for the play button:</p>
+
+<pre class="line-numbers">
+<code class="language-objectivec" translate="No"><a href="/ios/reference/sdk/Classes/BCOVPUIPlayerView.html#//api/name/controlsView">// After creating the BCOVPUIPlayerView, store it in a playerView property
+// Then set the accessibilityLabel and accessibilityHint properties
+self.playerView.controlsView.playbackButton.accessibilityLabel = @"Playback Button";
+self.playerView.controlsView.playbackButton.accessibilityHint = @"Play or pause the video";</a>
+</code></pre>
+
+<aside class="bcls-aside bcls-aside--information">If you are using your own playback controls, then you have to add VoiceOver support yourself.</aside>
+</section> -->
+
+<section class="bcls-section">
+<h2 id="Changing_the_background_color">背景色の変更</h2>
+
+<p>ポートレートモードでビデオを再生すると、プレーヤーの上下に黒い境界線が表示されることがあります。プレーヤービューは画面のサイズですが、ビデオはプレーヤービューの中央のごく一部を占めます。ビデオの周囲に表示される部分は、プレーヤーレイヤーの背景です。</p>
+
+<p><code translate="No">AVPlayer </code>これは正常な動作です。動画はプレーヤーレイヤー内に収まるように縮小され、残りはプレーヤーレイヤーの背景になります。</p>
+
+<p>プレイヤーレイヤーの背景は、次のコードで変更できます。</p>
+
+<pre class="line-numbers">
+<code class="language-objectivec" translate="No">(void)playbackController:(id&lt;BCOVPlaybackController&gt;)controller didAdvanceToPlaybackSession:(id&lt;BCOVPlaybackSession&gt;)session
+{
+session.playerLayer.backgroundColor = UIColor.whiteColor.CGColor;
+}</code></pre>
+
+<p>背景色を白に設定すると、次のようになります。</p>
+
+<figure class="bcls-figure"><img class="bcls-image--no-border" alt="Background color" src="//learning-services-media.brightcove.com/doc-assets/device-sdks/ios/snippets/ios-bkgd-color.png" />
+<figcaption class="bcls-caption--image">カスタム背景色</figcaption>
+</figure>
+</section>
+</article>
