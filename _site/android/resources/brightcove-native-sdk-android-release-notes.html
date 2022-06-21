@@ -774,6 +774,210 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 <section class="section">
 <h2 id="Previous_releases"><strong>以前のリリース</strong></h2>
 
+<h3>Version 6.18.5</h3>
+
+<h4>27 May 2022</h4>
+<p>SDK Changes:</p>
+<ul>
+  <li>Adds support for Short Manifest TTLs.</li>
+  <li><strong>IMPORTANT</strong>: Using this SDK version requires the Catalog and <code translate="No">HttpRequestConfig</code> objects to be instantiated on the player's main thread (in its <code translate="No">onCreate</code> method). Note that these objects can be defined either globally (which is preferred) or in the <code translate="No">onCreate</code> method. Please refer to the <a href="https://github.com/BrightcoveOS/android-player-samples/tree/master/brightcove-exoplayer/BasicSsaiSampleApp">BasicSsaiSampleApp</a> for an example of a locally defined and instantiated objects, and the <a href="https://github.com/BrightcoveOS/android-player-samples/tree/master/brightcove-exoplayer/VideoListSampleApp">VideoViewListSampleApp</a> for an example of globally defined and locally instantiated objects. Please also note that this is a requirement independent of the use of the Short Manifest TTLs feature.</li>
+</ul>
+
+<p>SSAI Plugin Changes:</p>
+
+<ul>
+  <li>Adds support for Short Manifest TTLs.</li>
+</ul>
+
+<h3>Version 6.18.4</h3>
+
+<h4>20 May 2022</h4>
+<p>SDK Changes:</p>
+<ul>
+  <li>Fixes an issue where a crash could occur if an account not configured for Generic Stream Concurrency (GSC) were to attempt to play content in a player that is configured for GSC.</li>
+  <li>Improves GSC error handling in cases where invalid or expired tokens might be used in attempting to play content.</li>
+</ul>
+
+<h3>Version 6.18.3</h3>
+
+<h4>6 May 2022</h4>
+<p>SDK Changes:</p>
+<ul>
+  <li>Fixes an Accessibility issue where when the seekbar has focus, the video progress percentage is constantly read by the <code translate="No">TalkBack</code> system.</li>
+  <li>Fixes an Accessibility issue where double-tapping the video view would focus on the seekbar, and cause an unexpected seek into the video.</li>
+  
+</ul>
+
+<p>ExoPlayer Changes:</p>
+<ul>
+  <li><code translate="No">ExoPlayerVideoDisplayComponent</code> now provides a getter method that returns the current instance of the <code translate="No">WidevineMediaDrmCallback</code>, or an empty instance if it needs to be created.</li>
+</ul>
+
+<p>Thumbnail Plugin Changes:</p>
+<ul>
+  <li>Fixes an issue where Playlists with a mix of Video Cloud and remote videos would cause a thumbnail from the last-played Video Cloud video to be displayed when selecting a remote video.</li>
+</ul>
+
+<h3>Version 6.18.2</h3>
+
+<h4>24 Mar 2022</h4>
+<p>SDK Changes:</p>
+<ul>
+  <li>Fixed an issue where <code translate="No">video_engagement</code> Analytics events for remote VOD videos could have a <code translate="No">video_seconds_viewed</code> parameter instead of the expected range parameter.
+  </li>
+  <li>Fixed player button click listeners when using custom drawables.</li>
+  <li>Fixed an issue where a call to <code translate="No">NumberUtil.safeLongToInt</code> might crash when its input is too large. Now, when the input can not be safely converted, the method returns <code translate="No">Integer.MIN_VALUE</code> with an explanatory message.</li>
+</ul>
+
+<p>ExoPlayer Changes:</p>
+<ul>
+  <li>Fixed an issue where with mixed playlists with DRM and Clear content, playback failed if a Clear video is loaded after playing a DRM video.</li>
+  <li>Added support for setting the <code translate="No">multiSession</code> property (required for key rotation) when creating the <code translate="No">DefaultDrmSessionManager</code> in ExoPlayer.</li>
+</ul>
+
+<h3>Version 6.18.1</h3>
+
+<h4>26 Jan 2022</h4>
+<p>ExoPlayer Changes:</p>
+<ul>
+  <li>Added a check to address a crash that could occur if the ExoPlayer instance becomes null and <code translate="No">getCurrentManifest()</code> is called in the <code translate="No">ExoPlayerVideoDisplayComponent</code>.</li>
+  </ul>
+
+<h3>Version 6.18.0</h3>
+
+<h4>21 Dec 2021</h4>
+<p>SDK Changes:</p>
+<ul>
+  <li><strong>IMPORTANT</strong>: Support for integer data types in player, content and event properties is deprecated in the following areas of content and ad playback:
+    <ul>
+      <li>Playhead position, for VOD and Live playback</li>
+      <li><p>Video duration</p></li>
+    </ul>
+    For a complete list of fields and methods that are migrated, see the <a href="https://sdks.support.brightcove.com/android/playback/playhead-position-and-video-duration.html">Android: Playhead Position and Video Duration</a> support document.
+  </li>
+  </ul>
+
+<p>SSAI Plugin Changes:</p>
+<ul>
+  <li>With this release, the SSAI plugin has been refactored to better support playback and seeking use cases.</li>
+  <li><p>Fixes an issue where seeking in a paused player over ads could load the wrong player controls.</p></li>
+  For a complete description of the behavioral and API-level changes to this plugin, see the <a href="https://sdks.support.brightcove.com/android/advertising/ssai-seeking-behavior.html">SSAI Plugin Changes with Android SDK v6.18.0</a> support document.
+</ul>
+
+<h3>Version 6.17.3</h3>
+
+<h4>10 Dec 2021</h4>
+<p>SDK Changes:</p>
+<ul>
+  <li>Fixes a Generic Stream Concurrency (GSC) issue where the second heartbeat request would follow the first request 30 seconds later, instead of the account-configured frequency.</li>
+  <li>Improvements to GSC heartbeat request functionality during Player Activity, Player Fragment and Picture-In-Picture lifecycle events, as well as retries on heartbeat request failures.</li>
+</ul>
+
+<h3>Version 6.17.2</h3>
+
+<h4>19 Nov 2021</h4>
+<p>SDK Changes:</p>
+<ul>
+<li>This version adds support for Generic Stream Concurrency (GSC). Please refer to the Brightcove Support Pages for more information.</li>
+<li>
+  Limitations
+  <ul>
+    <li>Chromecast is not supported in this version. Support for Chromecast will be included in a future release of the SDK.</li>
+  </ul>
+</li>
+<li>
+  Known Issues
+  <ul>
+    <li>When sending requests to the GSC heartbeat service, the second request will follow the first request 30 seconds later, instead of at the frequency set for the account. This issue only occurs on the second heartbeat request, does not affect playback, and will be addressed in a future release of the SDK.</li>
+  </ul>
+</li>
+</ul>
+
+<h3>Version 6.17.1</h3>
+
+<h4>14 Oct 2021</h4>
+<p>ExoPlayer Changes:</p>
+<ul>
+<li>Fixed an issue with overly verbose logging from the <code translate="No">ExoPlayerVideoDisplayComponent</code></li>
+</ul>
+
+<h3>Version 6.17.0</h3>
+
+<h4>8 Oct 2021</h4>
+
+<p>SDK Changes:</p>
+<ul>
+  <li>The Brightcove Native SDK for Android now supports Android 11</li>
+</ul>
+
+<p>ExoPlayer Changes:</p>
+<ul>
+<li>
+  <p>The Brightcove Native SDK for Android now supports ExoPlayer 2.14.2. Please note the following changes:</p>
+  <ul>
+    <li>
+      <p>In the <code translate="No">ExoPlayerVideoDisplayComponent</code> class the <code translate="No">getBrightcoveDrmSession() : BrightcoveDrmSession</code> method has been deprecated. Instead please use <code translate="No">ExoPlayerDrmSessionManager<FrameworkMediaCrypto></code>. See <code translate="No">ExoPlayerVideoDisplayComponent:getExoPlayerDrmSessionManager(): ExoPlayerDrmSessionManage</code></p>
+    </li>
+      <li>
+        <p>In the <code translate="No">ExoPlayerVideoDisplayComponent</code> class, in the <code translate="No">InfoListener</code> subclass, the method <code translate="No">onDecoderInitialized(AnalyticsListener.EventTime eventTime, int trackType, String decoderName,long initializationDurationMs)</code> has been deprecated. Instead, please use <code translate="No">onAudioDecoderInitialized(AnalyticsListener.EventTime eventTime, String decoderName, long initializationDurationMs) : void</code> and/or <code translate="No">onVideoDecoderInitialized(AnalyticsListener.EventTime eventTime, String decoderName, long initializationDurationMs) : void</code></p>
+      </li>
+      <li>
+        <p>The constructor for the <code translate="No">ExoPlayerDrmSessionManager</code> class has been deprecated. Instead, use the <code translate="No">ExoPlayerDrmSessionManager.Builder</code></p>
+      </li>
+      <li>
+        <p>The constructor for the <code translate="No">OfflineLicenseManager</code> class has been deprecated. The <code translate="No">OfflineLicenseManager</code> now uses the Builder pattern. See <code translate="No">OfflineLicenseManager.Builder</code></p>
+      </li>
+      <li>
+        <p>In the class <code translate="No">BrightcoveSegmentTemplate</code>, the method <code translate="No">getSegmentCount(long periodDurationUs)</code> has been deprecated. Instead, please use <code translate="No">getSegmentCountLong(long periodDurationUs)</code></p>
+      </li>
+      <li>This ExoPlayer version requires that any instance of the ExoPlayer must be created and accessed in the main thread, so any access to the <code translate="No">ExoPlayerVideoDisplayComponent.getExoPlayer</code> method or direct access to any ExoPlayer method must be on the main thread as well. Version 6.16.6</li>
+  </ul>
+</li>
+</ul>
+
+<h3>Version 6.16.6</h3>
+
+<h4>4 Oct 2021</h4>
+
+<p>SDK Changes:</p>
+<ul>
+  <li>Improves the <code translate="No">video_seconds_viewed</code> measurement in <code translate="No">video_engagement</code> events sent to the Brightcove Analytics back-end</li>
+</ul>
+
+<p>ExoPlayer Changes:</p>
+<ul>
+<li>Fixes an issue where a device could go to sleep during ad playback</li>
+</ul>
+
+<h3>Version 6.16.5</h3>
+
+<h4>23 Aug 2021</h4>
+
+<p>SDK Changes:</p>
+<ul>
+  <li>Improved support for 608/708 captions that have a language attribute</li>
+  <li>Emit a <code translate="No">DID_SET_VIDEO_STILL_ERROR</code> event when a video's poster image can not be loaded</li>
+</ul>
+
+<p>ExoPlayer Changes:</p>
+<ul>
+<li>Emit an <code translate="No">AD_ERROR</code> error event if ad loading is interrupted, or if the ExoAdPlayer or its context are null</li>
+</ul>
+
+<p>Offline Playback Plugin Changes:</p>
+<ul>
+<li> Fixed a problem where backgrounding or exiting the app could cause offline content to fail to play</li>
+</ul>
+
+<h3>Version 6.16.4</h3>
+
+<h4>4 Aug 2021</h4>
+
+<p>Offline Playback Changes:</p>
+<ul>
+  <li>Fixed an issue where some image files would not download successfully</li>
+</ul>
+
 <h3>バージョン6.16.3</h3>
 
 <h4>2021年7月1日</h4>
