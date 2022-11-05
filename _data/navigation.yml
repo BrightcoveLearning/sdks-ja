@@ -212,7 +212,7 @@
     - name: 基本的な
       url: '/ios/basics/index.html'
       docs:
-        - name: 'v6.11.0：iOS用プレーヤーSDKの概要'
+        - name: 'v6.11.1：iOS用プレーヤーSDKの概要'
           url: '/ios/basics/overview-brightcove-player-sdk-ios.html'
         - name: 建築
           url: '/ios/basics/architecture-brightcove-player-sdk-ios.html'
@@ -321,7 +321,7 @@
     - name: 基本的な
       url: '/tvos/basics/index.html'
       docs:
-        - name: 'v6.11.0：tvOS用プレーヤーSDKの概要'
+        - name: 'v6.11.1：tvOS用プレーヤーSDKの概要'
           url: '/tvos/basics/overview-brightcove-player-sdk-tvos.html'
         - name: '建築'
           url: '/ios/basics/architecture-brightcove-player-sdk-ios.html'
