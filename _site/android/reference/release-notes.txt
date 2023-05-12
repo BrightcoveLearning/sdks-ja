@@ -1,5 +1,142 @@
 Brightcove Native Player for Android Release Notes:
 
+Version 8.1.1
+
+  SDK Changes:
+    * Changes the datatype of the Video.Fields.ODRM_PLAYBACK_ALLOWED Video property to return a Boolean. To access this property, please cast it to Boolean.
+
+  ExoPlayer Changes:
+    * Fixes an issue where the COMPLETED event could be emitted on clearing a video from a playlist without completing playback.
+
+  Offline Playback Plugin Changes:
+    * Fixes an issue where CuePoints were not being configured for offline videos due to a ClassCastException.
+    * Fixes an issue where Poster Images were not being configured for offline videos due to a ClassCastException.
+    * Adds support for Custom Fields in the OfflineVideo properties map
+    * Adds support for Tags in the OfflineVideo properties map
+
+Version 8.1.0
+
+  SDK Changes:
+    * Change the data type of the Analytics rebuffering_seconds parameter from an integer to a float
+    * With the rebuffering_seconds value changed to a float, the Analytics rebuffering_count will be incremented for rebuffering_seconds values of less than one second
+    * Fixes an issue where rebuffering at player startup time was reported to Analytics as a player stall
+    * Fixes an issue where a player would continue playing automatically after being paused when in a stalled state
+    * Adds support for tags in the Video object
+
+  IMA Plugin Changes:
+    * Adds support for SpringServe macros to the IMA Plugin for the Brightcove Native SDK for Android
+
+  SSAI Plugin Changes:
+    * Adds Open Measurement (OM) SDK support to the SSAI Plugin for Brightcove Native SDK for Android
+    * Fixes post-roll analytic events when the VMAP duration is greater than the video’s actual duration
+
+Version 8.0.1
+
+  SDK Changes:
+    * Fixes an issue where transitions between videos in playlists could stretch the video display outside of the original bounds of the player display. 
+    * Fixes an issue where transitioning to Player-In-Player (PiP) mode while the video was playing would load the PiP player in paused mode.
+    * Fixes an issue that would cause the ShutterViewController to hide between video loading and ad playback.
+    * Fixes an issue that would prevent the ShutterViewController from hiding on detection of an ad error.
+
+  ExoPlayer Changes:
+    * Fixes an issue in ExoMediaPlayback where transitions between videos in playlists could prevent preroll ads from playing on subsequent videos.
+
+  SSAI Plugin Changes:
+    * Adds support for setting custom read and connect timeouts in the SSAIComponent and SSAIVideoProcessor
+
+Version 8.0.0
+
+    Please Note:
+    This major release of the Brightcove Native SDK for Android contains significant behavioral changes. Please refer to Support documentation for more information on these changes.
+
+    A summary of key behavioral changes:
+      * SDK Changes:
+        * With this version of the Brightcove Native SDK for Android, foreground and background playback of audio-only content is supported.
+          * The MediaPlayback interface abstracts playback from the VideoView to support continuous playback of audio-only media. The MediaPlayback communicates playback state to the notification and the VideoView.
+          * Support for an ongoing foreground service for continuous playback.
+          * Improves loading playlists and pre-buffering media for a smoother end-user experience.
+      * ExoPlayer Changes:
+        * Added a media-style notification with customizable playback controls from the notification shade and lockscreen. This BrightcoveNotification class connects playback with a foreground service.
+
+Version 7.1.4
+
+  Cast Plugin Changes:
+    * Adds support for the Brightcove Cast Receiver emeHeaders CustomData object.
+
+Version 7.1.3
+
+  SDK Changes:
+    * Fixes an issue where for some playback analytics metrics requests, a video_duration request parameter would not be included.
+    * Fixes an issue with support for Live HLSe with Playback Authorization Service (PAS) and Edge Playback Authorization (EPA). Please note that stream concurrency limiting (through climit and cbeh payloads, also referred to as License Protection) will be supported in an upcoming SDK release.
+
+Version 7.1.2
+
+  SDK Changes:
+    * Added support for Dolby Atmos audio. Since not all Android devices support playback with this format, it is recommended that content be transcoded to produce stereo as well as Dolby Atmos audio variants. Please refer to Support documentation for more information.
+
+  ExoPlayer Changes:
+    * Added support for Dub and Description DASH role values.
+
+Version 7.1.1
+
+  SDK Changes:
+    * Fixes a performance issue that could occur when loading larger size closed captions
+
+  ExoPlayer Changes:
+    * Adds setter and getter methods for the allowChunklessPreparation property ExoPlayer’s HLSMediaSource.Factory. With Exoplayer 2.17.0, the default value of this property was changed from false to true, which had the unintended side effect of turning off display of 608/708 captions if they were present in HLS content. If your HLS content includes 608/708 captions, use the ExoPlayerVideoDisplayComponent’s setAllowHlsChunklessPreparation(false) to disable HLS chunkless preparation in ExoPlayer’s HLSMediaSource.Factory, which will restore display of 608/708 captions.
+
+Version 7.1.0
+
+  SDK Changes:
+    * Adds support for an encryption Source property with HLSe Live streams.
+    * Improves response handling for Generic Stream Concurrency connections.
+    * Fixes an issue where a null or missing duration returned for a remote live video created in the VideoCloud Studio, would result in a VideoParserException.
+    * Adds a Generic Stream Concurrency (GSC) EventType, GSC_HEARTBEAT_STOPPED.
+
+  ExoPlayer Changes:
+    * Provides setter and getter methods in ExoPlayerVideoDisplayComponent for the DefaultRenderersFactory.
+    * In the TrackSelectorHelper class, applySelectionOverride(int, SelectionOverrideCreator) is deprecated. Please use applyTrackSelectionOverrides(int, TrackSelectionOverrideCreator) instead.
+    * Fixes the callbacks to retrieve metadata of the media during playback
+
+  SSAI Plugin Changes:
+    * This release of the Brightcove Native SDK for Android is the final release to use the Brightcove IAB Android Library as an external dependency. Future SDK releases will include the IAB Android Library as an integration in the SSAI plugin.
+    * Fixes a parsing issue with BrightcoveDebug elements that have self-closing tags.
+    * With this release, Live DRM with SSAI is supported.
+
+Version 7.0.1
+
+  Please Note:
+  This major release of the Brightcove Native SDK for Android contains breaking changes, as detailed below.
+
+  SDK Changes:
+    * With this release of the Brightcove Native SDK for Android, MediaPlayer is no longer supported for content playback.
+    * The Brightcove Native SDK for Android is now compatible with Android 12.
+
+  ExoPlayer Changes:
+    * The Brightcove Native Player SDK for Android now supports ExoPlayer 2.17.1. Please note the following breaking changes:
+    * This version of ExoPlayer requires Java 11 and Gradle 7.4.
+    * The DrmSession<T extends ExoMediaCrypto> interface no longer requires a parameter.
+    * The ExoPlayerDrmSessionManager<T extends ExoMediaCrypto> interface no longer requires a parameter.
+    * In the TrackSelectorHelper class. The method updateTracksSelectionArray(@Nullable TrackSelectionArray trackSelections) is now deprecated and replaced with updateTracksGroupInfos(@Nullable ImmutableList<TracksInfo.TrackGroupInfo> trackGroupInfos)
+    * In the MediaSourceUtil class, the method findRenditionUrl(@NonNull HlsMasterPlaylist hlsMasterPlaylist, int trackType, @NonNull Format format) is now deprecated and is replaced with findRenditionUrl(@NonNull HlsMultivariantPlaylist hlsMasterPlaylist, int trackType, @NonNull Format format).
+    * In the ExoAdPlayer class, the constructor requires a StyledPlayerView instead of a PlayerView.
+    * The DashAudioTrackSelector class is now deprecated and replaced with ExoPlayerVideoDisplayComponent.setPeakBitrate(int).
+    * The DashPeakBitRateTrackSelector class is now deprecated and replaced with ExoPlayerVideoDisplayComponent.setPeakBitrate(int).
+    * The HLSPeakBitrateTrackSelector class is now deprecated and replaced with ExoPlayerVideoDisplayComponent.setPeakBitrate(int).
+
+  Cast Plugin Changes:
+    * In the GoogleCastComponent class, these methods:
+      loadItem(MediaQueueItem, int)
+      addItems(MediaQueueItem)
+      now return void instead of PendingResult<RemoteMediaClient.MediaChannelResult>.
+    * Fixes an issue when casting Remote DRM videos, where the Cast sender was sending an unexpected CustomData field to the Brightcove Cast Receiver app.
+
+  IMA Plugin:
+    * The Google IMA SDK dependency has been upgraded to 3.27.0. This upgrade includes support for Android 12.
+
+  SSAI Plugin Changes:
+    * The SSAIComponent now supports use of the Brightcove VideoCloud VMAP XML object itself as a source. To use a VideoCloud VMAP XML object as a source, call processVideo(String vmapXmlString) in the SSAIComponent class.
+
 Version 6.18.6
 
   SDK Changes:
