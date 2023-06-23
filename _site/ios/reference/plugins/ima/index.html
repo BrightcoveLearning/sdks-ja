@@ -44,13 +44,13 @@
 					<div class="section section-overview index-overview">
 						
 						
-						<h1>IMA Plugin for Brightcove Player SDK for iOS, version 6.10.5.2109</h1>
+						<h1>IMA Plugin for Brightcove Player SDK for iOS, version 6.12.2.2452</h1>
 
 <h2>Installation</h2>
 
 <p>IMA Plugin for Brightcove Player SDK provides a dynamic library framework for installation.</p>
 
-<p>The IMA plugin supports version 3.14.4 of the Google IMA SDK for iOS and version 4.3.2 of the Google IMA SDK for tvOS.</p>
+<p>The IMA plugin supports version 3.18.1 of the Google IMA SDK for iOS and version 4.6.1 of the Google IMA SDK for tvOS.</p>
 
 <h3>CocoaPods</h3>
 
@@ -59,10 +59,11 @@
 <p>CocoaPod Podfile example:</p>
 
 <p>```bash
-source &lsquo;<a href="https://github.com/brightcove/BrightcoveSpecs.git" title="">https://github.com/brightcove/BrightcoveSpecs.git'</a></p>
+source &lsquo;<a href="https://github.com/CocoaPods/Specs" title="">https://github.com/CocoaPods/Specs'</a>
+source &rsquo;<a href="https://github.com/brightcove/BrightcoveSpecs.git" title="">https://github.com/brightcove/BrightcoveSpecs.git'</a></p>
 
-<p>use_frameworks!
-platform :ios, &lsquo;11.0&rsquo;</p>
+<p>platform :ios, &lsquo;12.0&rsquo;
+use_frameworks!</p>
 
 <p>target &lsquo;MyIMAPlayer&rsquo; do
   pod &lsquo;Brightcove-Player-IMA&rsquo;
@@ -99,6 +100,19 @@ end
 <li>Ensure that <code>arm64</code> has been added to your &ldquo;Excluded Architectures&rdquo; build setting for <code>Any iOS Simulator SDK</code>.</li>
 </ul>
 </li>
+</ol>
+
+
+<h3>Swift Package Manager</h3>
+
+<p>To add the IMA Plugin for Brightcove Player SDK to your project with Swift Package Manager:</p>
+
+<ol>
+<li>First <a href="https://github.com/brightcove/brightcove-player-sdk-ios#swift-package-manager">follow the steps</a> to add the Core XCFramework with Swift Package Mananger.</li>
+<li>Add the IMA package to Swift Package Manager using <code>https://github.com/brightcove/brightcove-player-sdk-ios-ima.git</code>.</li>
+<li>Download the <a href="https://developers.google.com/interactive-media-ads/docs/sdks/ios/download">Google IMA</a> framework.</li>
+<li>On the &ldquo;General&rdquo; tab of your application target, add <code>GoogleInteractiveMediaAds.xcframework</code> to the list of <strong>Frameworks, Libraries, and Embedded Content</strong>. The <em>Embed</em> setting for the XCFrameworks must be &ldquo;<em>Embed &amp; Sign</em>&rdquo;.</li>
+<li>On the &ldquo;Build Settings&rdquo; tab of your application target, ensure that the &ldquo;Framework Search Paths&rdquo; include the paths to the frameworks. This should have been done automatically unless the framework is stored under a different root directory than your project.</li>
 </ol>
 
 
@@ -140,14 +154,17 @@ end
     NSString *videoID = &lt;your-video-id&gt;;
     BCOVPlaybackService *playbackService = [[BCOVPlaybackService alloc] initWithAccountId:accountID
                                                                                 policyKey:policyKey];
-    [playbackService findVideoWithVideoID:videoID
-                               parameters:nil
-                               completion:^(BCOVVideo    *video,
-                                            NSDictionary *jsonResponse,
-                                            NSError      *error) {
+    NSDictionary *configuration = @{
+        kBCOVPlaybackServiceConfigurationKeyVideoID:videoID
+    };
+    [playbackService findVideoWithConfiguration:configuration
+                                queryParameters:nil
+                                     completion:^(BCOVVideo    *video,
+                                                  NSDictionary *jsonResponse,
+                                                  NSError      *error) {
 
-        [controller setVideos:@[ video ]];
-        [controller play];
+              [controller setVideos:@[ video ]];
+              [controller play];
 
     }];
 </code></pre>
@@ -497,7 +514,7 @@ id&lt;BCOVPlaybackSessionProvider&gt; imaSessionProvider =
 
 <h2>Registering Ad Overlays</h2>
 
-<p>If you are placing any views over ads while they are playing, it is necceessary to register those views with the IMA SDK. Read the <strong>Friendly obstructions</strong> section of the <a href="https://developers.google.com/interactive-media-ads/docs/sdks/ios/omsdk">Open Measurement in the IMA SDK </a> page for more information.</p>
+<p>If you are placing any views over ads while they are playing, it is necceessary to register those views with the IMA SDK. Read the <strong>Friendly obstructions</strong> section of the <a href="https://developers.google.com/interactive-media-ads/docs/sdks/ios/omsdk">Open Measurement in the IMA SDK</a> page for more information.</p>
 
 <p>You can get the current IMAAdDisplayContainer object neccessary to register your overlays from the <code>playbackController:playbackSession:didEnterAdSequence:</code> delegate method of your BCOVPlaybackController instance. For example:
 <code>
@@ -521,7 +538,7 @@ id&lt;BCOVPlaybackSessionProvider&gt; imaSessionProvider =
 
 <h2>AirPlay</h2>
 
-<p>The IMA plugin supports AirPlay for pre-roll and post-roll ads. Set <code>enableBackgroundPlayback</code> to <code>YES</code> on <code>IMASettings</code> along with enabling AirPlay on your <code>BCOVPlaybackController</code>. See the &ldquo;<em>AirPlay</em>&rdquo; section of the <a href="https://github.com/brightcove/brightcove-player-sdk-ios#airplay-">Core SDK README</a> for more information.</p>
+<p>The IMA plugin supports AirPlay for pre-roll and post-roll ads. Set <code>enableBackgroundPlayback</code> to <code>YES</code> on <code>IMASettings</code> along with enabling AirPlay on your <code>BCOVPlaybackController</code>. See the &ldquo;<em>AirPlay</em>&rdquo; section of the <a href="https://github.com/brightcove/brightcove-player-sdk-ios#airplay">Core SDK README</a> for more information.</p>
 
 <h2>Picture-in-Picture</h2>
 
@@ -533,7 +550,7 @@ id&lt;BCOVPlaybackSessionProvider&gt; imaSessionProvider =
 * VAST with pre, mid and/or post-rolls.
 * VMAP with a pre-roll.</p>
 
-<p>Set <code>enableBackgroundPlayback</code> to <code>YES</code> on <code>IMASettings</code> and see the &ldquo;<em>Picture in Picture</em>&rdquo; section of the <a href="https://github.com/brightcove/brightcove-player-sdk-ios#PIP">Core SDK README</a> for more information.</p>
+<p>Set <code>enableBackgroundPlayback</code> to <code>YES</code> on <code>IMASettings</code> and see the &ldquo;<em>Picture in Picture</em>&rdquo; section of the <a href="https://github.com/brightcove/brightcove-player-sdk-ios#picture-in-picture">Core SDK README</a> for more information.</p>
 
 <p>If you are using a VAST configuration you will need to use this <code>BCOVCuePointProgressPolicy</code>:</p>
 
@@ -553,44 +570,6 @@ id&lt;BCOVPlaybackSessionProvider&gt; imaSessionProvider =
 <p>These values will be appended to the <code>cust_params</code> query paramater of the IMA ad request URL. For example:</p>
 
 <p>The URL <code>http://pubads.g.doubleclick.net/gampad/ads</code> would become <code>http://pubads.g.doubleclick.net/gampad/ads?cust_params=account_id%3D11223344%26account_type%3Dpremium</code>.</p>
-
-<h2>Device Ad Targeting</h2>
-
-<p>You can use the <code>kBCOVIMAOptionBlockAdTargetingAPIsKey</code> when setting up your <code>IMASessionProvider</code> or IMA <code>BCOVPlaybackController</code> to prevent calls to <a href="https://developer.apple.com/documentation/adsupport">AdSupport</a> and <a href="https://developer.apple.com/documentation/apptrackingtransparency">AppTrackingTransparency</a> APIs which cannot be used in some App Store submission scenarios.</p>
-
-<pre><code>// BCOVPlaybackController
-
-NSDictionary *imaPlaybackSessionOptions = @{
-    kBCOVIMAOptionIMAPlaybackSessionDelegateKey: self,
-    kBCOVIMAOptionBlockAdTargetingAPIsKey: @(YES)
-};
-
-self.playbackController = [manager createIMAPlaybackControllerWithSettings:imaSettings
-                                                      adsRenderingSettings:renderSettings
-                                                          adsRequestPolicy:adsRequestPolicy
-                                                               adContainer:self.playerView.contentOverlayView
-                                                            viewController:self
-                                                            companionSlots:nil
-                                                              viewStrategy:nil
-                                                                   options:imaPlaybackSessionOptions];
-</code></pre>
-
-<pre><code>// IMASessionProvider
-
-NSDictionary *imaPlaybackSessionOptions = @{
-    kBCOVIMAOptionIMAPlaybackSessionDelegateKey: self,
-    kBCOVIMAOptionBlockAdTargetingAPIsKey: @(YES)
-};
-
-id&lt;BCOVPlaybackSessionProvider&gt; imaSessionProvider = [manager createIMASessionProviderWithSettings:imaSettings
-                                                                              adsRenderingSettings:renderSettings
-                                                                                  adsRequestPolicy:adsRequestPolicy
-                                                                                       adContainer:self.playerView.contentOverlayView
-                                                                                    viewController:self
-                                                                                    companionSlots:nil
-                                                                           upstreamSessionProvider:nil
-                                                                                           options:imaPlaybackSessionOptions];
-</code></pre>
 
 <h2>AVPlayerViewController Support</h2>
 
@@ -683,7 +662,7 @@ id&lt;BCOVPlaybackSessionProvider&gt; imaSessionProvider = [manager createIMASes
 					<footer>
 						<div class="footer-copyright">
 							
-							<p class="copyright">Copyright &copy; 2022 Brightcove. All rights reserved. Updated: 2022-05-17</p>
+							<p class="copyright">Copyright &copy; 2023 Brightcove. All rights reserved. Updated: 2023-06-21</p>
 							
 							
 							<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

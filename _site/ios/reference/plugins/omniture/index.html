@@ -44,7 +44,7 @@
 					<div class="section section-overview index-overview">
 						
 						
-						<h1>Omniture (Adobe Marketing Cloud - Adobe Analytics) Plugin for Brightcove Player SDK for iOS, version 6.10.5.2109</h1>
+						<h1>Omniture (Adobe Marketing Cloud - Adobe Analytics) Plugin for Brightcove Player SDK for iOS, version 6.12.2.2452</h1>
 
 <h2>Installation</h2>
 
@@ -57,7 +57,11 @@
 <h4>Static Framework example:</h4>
 
 <p>```bash
-source &lsquo;<a href="https://github.com/brightcove/BrightcoveSpecs.git" title="">https://github.com/brightcove/BrightcoveSpecs.git'</a></p>
+source &lsquo;<a href="https://github.com/CocoaPods/Specs" title="">https://github.com/CocoaPods/Specs'</a>
+source &rsquo;<a href="https://github.com/brightcove/BrightcoveSpecs.git" title="">https://github.com/brightcove/BrightcoveSpecs.git'</a></p>
+
+<p>platform :ios, &lsquo;11.4&rsquo;
+use_frameworks!</p>
 
 <p>target &lsquo;MyOmniturePlayer&rsquo; do
   pod &lsquo;Brightcove-Player-Omniture&rsquo;
@@ -69,7 +73,11 @@ end
 <p>XCFrameworks can be installed by appending the <code>/XCFramework</code> subspec to the pod name.</p>
 
 <p>```bash
+source &lsquo;https://github.com/CocoaPods/Specs&rsquo;
 source &lsquo;https://github.com/brightcove/BrightcoveSpecs.git&rsquo;</p>
+
+<p>platform :ios, &lsquo;11.4&rsquo;
+use_frameworks!</p>
 
 <p>target &lsquo;MyOmniturePlayer&rsquo; do
   pod &lsquo;Brightcove-Player-Omniture/XCFramework&rsquo;
@@ -81,7 +89,7 @@ end
 <p>To add the Omniture Plugin for Brightcove Player SDK to your project manually:</p>
 
 <ol>
-<li>Install the latest version of the <a href="https://github.com/brightcove/brightcove-player-sdk-ios#ManualInstallation">Brightcove Player SDK</a>.</li>
+<li>Install the latest version of the <a href="https://github.com/brightcove/brightcove-player-sdk-ios#manual-installation">Brightcove Player SDK</a>.</li>
 <li>Download the latest zip'ed release of the plugin from the <a href="https://github.com/brightcove/brightcove-player-sdk-ios-omniture/releases">release page</a>.</li>
 <li>Add the <code>BrightcoveAMC.framework</code> or <code>BrightcoveAMC.xcframework</code> project.  You can do this by right-clicking on the Frameworks folder and choose &ldquo;Add Files To&rdquo; option and select the <code>BrightcoveAMC.framework</code> or <code>BrightcoveAMC.xcframework</code> from the path where it is stored.</li>
 <li>On the &ldquo;Build Settings&rdquo; tab of your application target, ensure that the &ldquo;Framework Search Paths&rdquo; include the path to the framework. This should have been done automatically unless the framework is stored under a different root directory than your project.</li>
@@ -113,11 +121,11 @@ end
 
 <h3>Swift Package Manager</h3>
 
-<p>To add the SSAI Plugin for Brightcove Player SDK to your project with Swift Package Manager:</p>
+<p>To add the Omniture Plugin for Brightcove Player SDK to your project with Swift Package Manager:</p>
 
 <ol>
-<li>First <a href="https://github.com/brightcove/brightcove-player-sdk-ios#SwiftPackageManager">follow the steps</a> to add the Core XCFramework with Swift Package Mananger.</li>
-<li>Add the SSAI package to Swift Package Manager using <code>https://github.com/brightcove/brightcove-player-sdk-ios-ssai.git</code>.</li>
+<li>First <a href="https://github.com/brightcove/brightcove-player-sdk-ios#swift-package-manager">follow the steps</a> to add the Core XCFramework with Swift Package Mananger.</li>
+<li>Add the Omniture package to Swift Package Manager using <code>https://github.com/brightcove/brightcove-player-sdk-ios-omniture.git</code>.</li>
 <li>Link to the following libraries:
 
 <ul>
@@ -135,8 +143,6 @@ end
 <li>Add the Marketing Cloud and Video Heartbeat header folders to the Header Search Path settings of your project.</li>
 </ol>
 
-
-<p><em>Note: The Open Measurement XCFramework will be automatically installed with the SSAI XCFramework.</em></p>
 
 <h2>Quick Start</h2>
 
@@ -187,14 +193,17 @@ end
     NSString *videoID = &lt;your-video-id&gt;;
     BCOVPlaybackService *service = [[BCOVPlaybackService alloc] initWithAccountId:accountId
                                                                         policyKey:policyKey];
-    [service findVideoWithVideoID:videoID
-                       parameters:nil
-                       completion:^(BCOVVideo    *video,
-                                    NSDictionary *jsonResponse,
-                                    NSError      *error) {
+    NSDictionary *configuration = @{
+        kBCOVPlaybackServiceConfigurationKeyVideoID:videoID
+    };
+    [service findVideoWithConfiguration:configuration
+                        queryParameters:nil
+                             completion:^(BCOVVideo    *video,
+                                          NSDictionary *jsonResponse,
+                                          NSError      *error) {
 
-        [controller setVideos:@[ video ]];
-        [controller play];
+          [controller setVideos:@[ video ]];
+          [controller play];
 
     }];
 </code></pre>
@@ -238,14 +247,17 @@ end
     NSString *videoID = &lt;your-video-id&gt;;
     BCOVPlaybackService *service = [[BCOVPlaybackService alloc] initWithAccountId:accountId
                                                                         policyKey:policyKey];
-    [service findVideoWithVideoID:videoID
-                       parameters:nil
-                       completion:^(BCOVVideo    *video,
-                                    NSDictionary *jsonResponse,
-                                    NSError      *error) {
+    NSDictionary *configuration = @{
+        kBCOVPlaybackServiceConfigurationKeyAssetID:videoID
+    };
+    [service findVideoWithConfiguration:configuration
+                        queryParameters:nil
+                             completion:^(BCOVVideo    *video,
+                                          NSDictionary *jsonResponse,
+                                          NSError      *error) {
 
-      [controller setVideos:@[ video ]];
-      [controller play];
+          [controller setVideos:@[ video ]];
+          [controller play];
 
     }];
 </code></pre>
@@ -314,7 +326,7 @@ https://github.com/Adobe-Marketing-Cloud/mobile-services/archive/refs/tags/v4.21
 					<footer>
 						<div class="footer-copyright">
 							
-							<p class="copyright">Copyright &copy; 2022 Brightcove. All rights reserved. Updated: 2022-05-17</p>
+							<p class="copyright">Copyright &copy; 2023 Brightcove. All rights reserved. Updated: 2023-06-21</p>
 							
 							
 							<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

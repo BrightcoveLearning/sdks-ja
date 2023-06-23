@@ -44,7 +44,7 @@
 					<div class="section section-overview index-overview">
 						
 						
-						<h1>SSAI Plugin for Brightcove Player SDK for iOS, version 6.10.5.2109</h1>
+						<h1>SSAI Plugin for Brightcove Player SDK for iOS, version 6.12.2.2452</h1>
 
 <p>Supports Mac Catalyst 13.0 and above since SDK release v6.10.3.</p>
 
@@ -62,7 +62,7 @@
 source &lsquo;<a href="https://github.com/brightcove/BrightcoveSpecs.git" title="">https://github.com/brightcove/BrightcoveSpecs.git'</a></p>
 
 <p>use_frameworks!
-platform :ios, &lsquo;11.0&rsquo;</p>
+platform :ios, &lsquo;11.4&rsquo;</p>
 
 <p>target &lsquo;MyVideoPlayer&rsquo; do
   pod &lsquo;Brightcove-Player-SSAI&rsquo;
@@ -77,7 +77,7 @@ end
 source &lsquo;https://github.com/brightcove/BrightcoveSpecs.git&rsquo;</p>
 
 <p>use_frameworks!
-platform :ios, &lsquo;11.0&rsquo;</p>
+platform :ios, &lsquo;11.4&rsquo;</p>
 
 <p>target &lsquo;MyVideoPlayer&rsquo; do
   pod &lsquo;Brightcove-Player-SSAI/XCFramework&rsquo;
@@ -116,7 +116,7 @@ end
 <p>To add the SSAI Plugin for Brightcove Player SDK to your project with Swift Package Manager:</p>
 
 <ol>
-<li>First <a href="https://github.com/brightcove/brightcove-player-sdk-ios#SwiftPackageManager">follow the steps</a> to add the Core XCFramework with Swift Package Mananger.</li>
+<li>First <a href="https://github.com/brightcove/brightcove-player-sdk-ios#swift-package-manager">follow the steps</a> to add the Core XCFramework with Swift Package Mananger.</li>
 <li>Add the SSAI package to Swift Package Manager using <code>https://github.com/brightcove/brightcove-player-sdk-ios-ssai.git</code>.</li>
 <li>You can then select either <code>BrightcoveSSAI</code> or <code>BrightcoveSSAI &amp; Open Measurement</code> if you need OM support.</li>
 </ol>
@@ -144,11 +144,14 @@ end
 
 <p>  [5] BCOVPlaybackService <em>playbackService = [[BCOVPlaybackService alloc] initWithAccountId:accoundId
                                                                                   policyKey:policyKey];
-      [playbackService findVideoWithVideoID:videoID
-                                 parameters:@{ kBCOVPlaybackServiceParamaterKeyAdConfigId: &lt;valid-ad-config-id> }
-                                 completion:^(BCOVVideo </em>video,
-                                              NSDictionary <em>jsonResponse,
-                                              NSError </em>error) {</p>
+      NSDictionary </em>configuration = @{
+        kBCOVPlaybackServiceConfigurationKeyAssetID:videoID
+      };
+      [playbackService findVideoWithConfiguration:configuration
+                                  queryParameters:@{ kBCOVPlaybackServiceParamaterKeyAdConfigId: &lt;valid-ad-config-id> }
+                                       completion:^(BCOVVideo <em>video,
+                                                    NSDictionary </em>jsonResponse,
+                                                    NSError *error) {</p>
 
 <p>  [6]   [playbackController setVideos:@[ video ]];
         [playbackController play];</p>
@@ -166,7 +169,7 @@ To summarize:
 1. Request the video or playlist from the Playback Service. When using a Unicorn Once-style VMAP URL, create the BCOVVideo object directly using `[BCOVVideo videoWithURL:&lt;unicorn-style-url&gt;]`.
 1. Load the video into the playback controller.
 
-## Open Measurement &lt;a name="OpenMeasurement"&gt;&lt;/a&gt;
+## Open Measurement
 
 Open Measurement (OM) is an IAB Tech Lab initiative aimed to standardize viewability and verification measurement. Using OM, publishers can access multiple SDKs collapsed into a single integration, simplifying maintenance without sacrificing functionality.
 The SDK provided by IAB Tech Lab can be used in the SSAI Plugin for Brightcove Player for iOS. Since v6.10.3 the OMSDK is not installed along with the SSAI plugin. You can install it in your iOS apps adding the pod in your Podfile:
@@ -250,7 +253,7 @@ CMTime contentTimeToSeekTo = &lt;calculation-from-scrub-bar>;
 
 <p>  if (finished)
   {
-    [self.currentSession.player play];
+    [self.playbackController play];
   }</p>
 
 <p>}];
@@ -365,28 +368,31 @@ self.playerView.playbackController = playbackController;</p>
 <p>// Create and play your video. For Unicorn Once-style VMAP URLs, create the BCOVVideo object directly.
 BCOVPlaybackService <em>playbackService = [[BCOVPlaybackService alloc] initWithAccountId:accoundId
                                                                             policyKey:policyKey];
-[playbackService findVideoWithVideoID:videoID
-                           parameters:{ kBCOVPlaybackServiceParamaterKeyAdConfigId: &lt;valid-ad-config-id> }
-                           completion:^(BCOVVideo </em>video,
-                                        NSDictionary <em>jsonResponse,
-                                        NSError </em>error) {</p>
+NSDictionary </em>configuration = @{
+    kBCOVPlaybackServiceConfigurationKeyAssetID:videoID
+};
+[playbackService findVideoWithConfiguration:configuration
+                            queryParameters:{ kBCOVPlaybackServiceParamaterKeyAdConfigId: &lt;valid-ad-config-id> }
+                                 completion:^(BCOVVideo <em>video,
+                                              NSDictionary </em>jsonResponse,
+                                              NSError *error) {</p>
 
-<pre><code>                         [playbackController setVideos:@[ video ]];
-                         [playbackController play];
-
-                      }];
+<pre><code>[playbackController setVideos:@[ video ]];
+[playbackController play];
 </code></pre>
 
-<pre><code>
-See the README in the BrightcovePlayerSDK for more details about how to use and customize the PlayerUI controls.
+<p>}];
+```</p>
 
-## Access to VMAP Response Data
+<p>See the README in the BrightcovePlayerSDK for more details about how to use and customize the PlayerUI controls.</p>
 
-Should you want access to the VMAP response data you can subscribe to the `kBCOVSSAIVMAPResponseReceivedNotification` notification. Once received, the notification's userInfo dictionary will contain the VMAP response as NSData. You can use the `kBCOVSSAIVMAPResponseReceivedNotificationDataUserInfoKey` constant to access it from userInfo. Since you may have multiple playback controllers, and thus multiple VMAP responses, you can check the notification's object, `id playbackController = notification.object` to verify which video the VMAP data is for. Additionally, when you subscribe to the notification you can set a playback controller as the object so that only VMAP data notifications regarding that playback controller will be received. For example:
+<h2>Access to VMAP Response Data</h2>
 
-```objc
+<p>Should you want access to the VMAP response data you can subscribe to the <code>kBCOVSSAIVMAPResponseReceivedNotification</code> notification. Once received, the notification&rsquo;s userInfo dictionary will contain the VMAP response as NSData. You can use the <code>kBCOVSSAIVMAPResponseReceivedNotificationDataUserInfoKey</code> constant to access it from userInfo. Since you may have multiple playback controllers, and thus multiple VMAP responses, you can check the notification&rsquo;s object, <code>id playbackController = notification.object</code> to verify which video the VMAP data is for. Additionally, when you subscribe to the notification you can set a playback controller as the object so that only VMAP data notifications regarding that playback controller will be received. For example:</p>
+
+<p><code>objc
 [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(vmapResponseReceived:) name:kBCOVSSAIVMAPResponseReceivedNotification object:self.playbackController];
-</code></pre>
+</code></p>
 
 <p>You can also access the VMAP response data through the <code>BCOVOUXSession</code> object:</p>
 
@@ -502,7 +508,7 @@ func playbackController(_ controller: BCOVPlaybackController!, didAdvanceTo sess
     return targetTime;
 }
 
-- (void)playerViewController:(AVPlayerViewController *)playerViewController didPresentInterstitialTimeRange:(AVInterstitialTimeRange *)interstitial
+- (void)playbackController:(id&lt;BCOVPlaybackController&gt;)controller playbackSession:(id&lt;BCOVPlaybackSession&gt;)session didExitAdSequence:(BCOVAdSequence *)adSequence
 {
     ...
 
@@ -540,9 +546,129 @@ func playbackController(_ controller: BCOVPlaybackController!, didAdvanceTo sess
 }
 </code></pre>
 
+<h2>Picture-in-Picture</h2>
+
+<p>The Brightcove SSAI plugin can be used with Brightcove&rsquo;s Picture-in-Picture support.</p>
+
+<p>When entering and exiting an ad sequence the <code>requiresLinearPlayback</code> property on the current <code>AVPictureInPictureController</code> will be enabled and disabled accordingly so that users can not skip ad breaks.</p>
+
 <h3>Using a Custom Playback Rate</h3>
 
-<p>If you want to use a <a href="https://github.com/brightcove/brightcove-player-sdk-ios#PlaybackRate">custom playback rate</a> along with using <a href="https://github.com/brightcove/brightcove-player-sdk-ios#AVPlayerViewController">AVPlayerViewController</a> you&rsquo;ll need to disable the automatic generation of <code>interstitialTimeRanges</code>. You can do this by setting the <code>generateInterstitialTimeRanges</code> property on your <code>BCOVPlaybackController</code> to <code>NO</code>.</p>
+<p>If you want to use a <a href="https://github.com/brightcove/brightcove-player-sdk-ios#playback-rate">custom playback rate</a> along with using <a href="https://github.com/brightcove/brightcove-player-sdk-ios#using-an-avplayerviewcontroller-with-a-bcovplaybackcontroller">AVPlayerViewController</a> you&rsquo;ll need to disable the automatic generation of <code>interstitialTimeRanges</code>. You can do this by setting the <code>generateInterstitialTimeRanges</code> property on your <code>BCOVPlaybackController</code> to <code>NO</code>.</p>
+
+<h2>SSAI URL Variables</h2>
+
+<p>SSAI supports <a href="https://apis.support.brightcove.com/ssai/getting-started/video-cloud-ssai-ad-config-api.html#URL_variables">URL variables</a> which allow you to pass arbitrary data from the content.vmap URL into the SSAI system. For example the URL <code>content.vmap?foo={{url.foo}}&amp;bar={{url.bar}}</code> would become <code>content.vmap?foo=123&amp;bar=hello</code> after replacing each <code>{{url.&lt;variableName&gt;}}</code> variable with a real value.</p>
+
+<p>Here is an example of how you could perform the variable replacement:</p>
+
+<pre><code>// Objective-C
+
+- (void)requestContentFromPlaybackService
+{
+    __weak typeof(self) weakSelf = self;
+    ...
+    [self.playbackService findVideoWithConfiguration:configuration queryParameters:queryParmaters completion:^(BCOVVideo *video, NSDictionary *jsonResponse, NSError *error) {
+        if (jsonResponse)
+        {
+            NSDictionary *updatedJSON = [weakSelf replaceSSAIVariablesInJSON:jsonResponse];
+            video = [BCOVPlaybackService videoFromJSONDictionary:updatedJSON];
+            [weakSelf.playbackController setVideos:@[video]];
+        }
+    }];
+}
+
+- (NSDictionary *)replaceSSAIVariablesInJSON:(NSDictionary *)jsonResponse
+{
+    NSMutableDictionary *updatedJson = jsonResponse.mutableCopy;
+    NSArray *sources = jsonResponse[@"sources"];
+    NSMutableArray *updatedSources = @[].mutableCopy;
+    for (NSDictionary *source in sources)
+    {
+        NSString *vmapURL = source[@"vmap"];
+        if ([vmapURL containsString:@"{{url."])
+        {
+            NSMutableDictionary *updatedSource = source.mutableCopy;
+            updatedSource[@"vmap"] = [self replaceSSAIVariablesInVMAPURL:vmapURL];
+            [updatedSources addObject:updatedSource];
+        }
+        else
+        {
+            [updatedSources addObject:source];
+        }
+    }
+    updatedJson[@"sources"] = updatedSources;
+    return updatedJson;
+}
+
+- (NSString *)replaceSSAIVariablesInVMAPURL:(NSString *)vmapURL
+{
+    NSDictionary *replacementValues = @{
+        @"foo": @"123",
+        @"bar": @"hello"
+    };
+    for (NSString *key in replacementValues.allKeys)
+    {
+        NSString *valueToReplace = [NSString stringWithFormat:@"{{url.%@}}", key];
+        NSString *replacementValue = [NSString stringWithFormat:@"%@", replacementValues[key]];
+        vmapURL = [vmapURL stringByReplacingOccurrencesOfString:valueToReplace withString:replacementValue].mutableCopy;
+    }
+    return vmapURL;
+}
+</code></pre>
+
+<pre><code>// Swift
+
+func requestContentFromPlaybackService() {
+    ...
+    playbackService.findVideo(withConfiguration: configuration, queryParameters: queryParameters, completion: { [weak self] (video: BCOVVideo?, jsonResponse: [AnyHashable: Any]?, error: Error?) in
+        guard let jsonResponse = jsonResponse else {
+            return
+        }
+        let updatedJSON = self?.replaceSSAIVariablesInJSON(jsonResponse)
+        let updatedVideo = BCOVPlaybackService.video(fromJSONDictionary: updatedJSON)
+        self?.playbackController?.setVideos([updatedVideo] as NSFastEnumeration)
+    })
+}
+
+func replaceSSAIVariablesInJSON(_ jsonResponse: [AnyHashable: Any]) -&gt; [AnyHashable: Any] {
+    guard let sources = jsonResponse["sources"] as? [[AnyHashable: Any]] else {
+        return jsonResponse
+    }
+    var updatedJson = jsonResponse
+    var updatedSources = [[AnyHashable: Any]]()
+    for source in sources {
+        guard let vmapURL = source["vmap"] as? String else {
+            continue
+        }
+        if vmapURL.contains("{{url.") {
+            var updatedSource = source
+            updatedSource["vmap"] = replaceSSAIVariablesInVMAPURL(vmapURL)
+            updatedSources.append(updatedSource)
+        } else {
+            updatedSources.append(source)
+        }
+    }
+    updatedJson["sources"] = updatedSources
+    return updatedJson
+}
+
+func replaceSSAIVariablesInVMAPURL(_ vmapURL: String) -&gt; String {
+    let replacementValues = [
+        "foo": "123",
+        "bar": "hello"
+    ]
+    var updatedURL = vmapURL
+    for key in replacementValues.keys {
+        guard let replacementValue = replacementValues[key] else {
+            continue
+        }
+        let valueToReplace = "{{url.\(key)}}"
+        updatedURL = updatedURL.replacingOccurrences(of: valueToReplace, with: replacementValue)
+    }
+    return updatedURL
+}
+</code></pre>
 
 <h2>Known Issues</h2>
 
@@ -610,7 +736,7 @@ func playbackController(_ controller: BCOVPlaybackController!, didAdvanceTo sess
 					<footer>
 						<div class="footer-copyright">
 							
-							<p class="copyright">Copyright &copy; 2022 Brightcove. All rights reserved. Updated: 2022-05-17</p>
+							<p class="copyright">Copyright &copy; 2023 Brightcove. All rights reserved. Updated: 2023-06-21</p>
 							
 							
 							<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

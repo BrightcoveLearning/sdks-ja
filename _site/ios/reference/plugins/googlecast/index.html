@@ -44,7 +44,7 @@
 					<div class="section section-overview index-overview">
 						
 						
-						<h1>Google Cast Plugin for Brightcove Player SDK for iOS, version 6.10.5.2109</h1>
+						<h1>Google Cast Plugin for Brightcove Player SDK for iOS, version 6.12.2.2452</h1>
 
 <h2>Installation</h2>
 
@@ -62,7 +62,7 @@
 source &lsquo;<a href="https://github.com/CocoaPods/Specs" title="">https://github.com/CocoaPods/Specs'</a>
 source &rsquo;<a href="https://github.com/brightcove/BrightcoveSpecs.git" title="">https://github.com/brightcove/BrightcoveSpecs.git'</a></p>
 
-<p>platform :ios, &lsquo;11.0&rsquo;</p>
+<p>platform :ios, &lsquo;11.4&rsquo;</p>
 
 <p>use_frameworks!</p>
 
@@ -77,9 +77,8 @@ end
 source &lsquo;https://github.com/CocoaPods/Specs&rsquo;
 source &lsquo;https://github.com/brightcove/BrightcoveSpecs.git&rsquo;</p>
 
-<p>platform :ios, &lsquo;11.0&rsquo;</p>
-
-<p>use_frameworks!</p>
+<p>platform :ios, &lsquo;11.4&rsquo;
+use_frameworks!</p>
 
 <p>target &lsquo;ExampleApp&rsquo; do
     pod &lsquo;Brightcove-Player-GoogleCast-static&rsquo;
@@ -107,7 +106,7 @@ The first subspec indicates the GoogleCast version (bluetooth or no-bluetooth) t
 
 <ol>
 <li>Follow the <a href="https://developers.google.com/cast/docs/ios_sender/#manual_setup">Google Cast SDK Manual Setup</a> guide.</li>
-<li>Follow the <a href="https://github.com/brightcove/brightcove-player-sdk-ios#ManualInstallation">Brightcove Player SDK Manual Installation</a> guide.</li>
+<li>Follow the <a href="https://github.com/brightcove/brightcove-player-sdk-ios#manual-installation">Brightcove Player SDK Manual Installation</a> guide.</li>
 <li>Download the <a href="https://github.com/brightcove/brightcove-player-sdk-ios-googlecast">Google Cast Plugin for Brightcove Player SDK</a> framework.</li>
 <li>On the &ldquo;General&rdquo; tab of your application target, add <code>BrightcoveGoogleCast.framework</code> or <code>BrightcoveGoogleCast.xcframework</code> from the Google Cast Plugin for Brightcove Player SDK download to the list of <strong>Frameworks, Libraries, Embedded Content</strong>.</li>
 <li>On the &ldquo;Build Settings&rdquo; tab of your application target, ensure that the &ldquo;Framework Search Paths&rdquo; include the paths to the frameworks. This should have been done automatically unless the framework is stored under a different root directory than your project.</li>
@@ -126,7 +125,7 @@ The first subspec indicates the GoogleCast version (bluetooth or no-bluetooth) t
 <p>To add the Google Cast Plugin for Brightcove Player SDK to your project with Swift Package Manager:</p>
 
 <ol>
-<li>First <a href="https://github.com/brightcove/brightcove-player-sdk-ios#SwiftPackageManager">follow the steps</a> to add the Core XCFramework with Swift Package Mananger.</li>
+<li>First <a href="https://github.com/brightcove/brightcove-player-sdk-ios#swift-package-manager">follow the steps</a> to add the Core XCFramework with Swift Package Mananger.</li>
 <li>Add the Google Cast package to Swift Package Manager using <code>https://github.com/brightcove/brightcove-player-sdk-ios-googlecast.git</code>.</li>
 <li>Follow the <a href="https://developers.google.com/cast/docs/ios_sender/#manual_setup">Google Cast SDK Manual Setup</a> guide.</li>
 </ol>
@@ -195,6 +194,43 @@ The first subspec indicates the GoogleCast version (bluetooth or no-bluetooth) t
 <li>applicationId (for use with analytics tracking)</li>
 </ul>
 
+
+<p><strong>NOTE: When using the Brightcove Cast Receiver app with the Brightcove Native SDKs, you must send the <code>catalogParams</code> object via the <code>customData</code> interface. A static URL is not supported. If you are correctly utilizing the <code>BCOVReceiverAppConfig</code> class this is handled for you.</strong></p>
+
+<h2>Generic Stream Concurrency</h2>
+
+<p>Generic Stream Concurrency is supported when using the Brightcove CAF Receiver. You must create a web player that has stream concurrency enabled.</p>
+
+<p>At this time, there is no dedicated UI for this feature in Studio, so the JSON editor must be used. The configuration will look something like this:
+<code>
+  "video_cloud": {
+    "stream_concurrency": true,
+    "policy_key": "BCpk..."
+  },
+  "player": {
+    "template": {
+      "name": "single-video-template",
+      "version": "6.63.1"
+    }
+  },
+</code></p>
+
+<p>Once you have configured your player you can specify your GSC enabled player using the <code>playerUrl</code> property on <code>BCOVReceiverAppConfig</code>:</p>
+
+<pre><code>receiverAppConfig.playerUrl = @"https://players.brightcove.net/.../index.min.js";
+</code></pre>
+
+<p>The following claims are required:
+* <code>climit</code>: The concurrency limit claim indicates how many watchers or streams can play at the same time.
+* <code>uid</code>: The viewer identifier is used to correlate multiple sessions to enforce Stream Concurrency
+* <code>sid</code>: <a href="https://apis.support.brightcove.com/playback-restrictions/guides/generic-stream-concurrency.html#correlator_identifier">Correlator identifier</a> defines the streaming locations for a viewer.</p>
+
+<p>For additional information please see the <a href="https://apis.support.brightcove.com/playback-restrictions/guides/generic-stream-concurrency.html#Implementation">Implementation</a> section of our Generic Stream Concurrency guide.</p>
+
+<p>You can then set the <code>authToken</code> property on <code>BCOVReceiverAppConfig</code> with your JWT:</p>
+
+<pre><code>receiverAppConfig.authToken = &lt;jwt&gt;
+</code></pre>
 
 <h2>Delegate Methods</h2>
 
@@ -310,7 +346,7 @@ The first subspec indicates the GoogleCast version (bluetooth or no-bluetooth) t
 					<footer>
 						<div class="footer-copyright">
 							
-							<p class="copyright">Copyright &copy; 2022 Brightcove. All rights reserved. Updated: 2022-05-17</p>
+							<p class="copyright">Copyright &copy; 2023 Brightcove. All rights reserved. Updated: 2023-06-21</p>
 							
 							
 							<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>
